@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="_ds/classical-fd5f0d87-b8bc-49aa-8e89-90d80b37db59/styles.css">
+<script src="_ds/classical-fd5f0d87-b8bc-49aa-8e89-90d80b37db59/_ds_bundle.js"></script>
+<script src="image-slot.js"></script>
+<style>
+  body { margin: 0; background: var(--color-bg); color: var(--color-text); font-family: var(--font-body); text-wrap: pretty; }
+  a { color: var(--color-accent-700); text-underline-offset: 3px; }
+  a:hover { color: var(--color-accent); }
+  @keyframes jygs-marq { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  :root[data-jygs-theme="light"] { color-scheme: light; }
+  :root[data-jygs-theme="dark"] {
+    color-scheme: dark;
+    --color-bg: #1a1917;
+    --color-surface: #232120;
+    --color-text: #ece8e2;
+    --color-divider: color-mix(in srgb, #ece8e2 18%, transparent);
+    --color-accent: #d9a355;
+    --color-accent-700: #e1ad66;
+    --color-accent-600: #e8bb80;
+    --color-neutral-100: #232120;
+    --color-neutral-200: #2d2b29;
+    --color-neutral-300: #3a3835;
+    --color-neutral-800: #d7d3cd;
+    --color-neutral-900: #ece8e2;
+  }
+  :root[data-jygs-theme="dark"] .plate { filter: sepia(0.12) saturate(0.9) brightness(0.9) contrast(1.02); }
+  body { transition: background-color .45s ease, color .45s ease; overflow-x: hidden; }
+  img, svg, image-slot { max-width: 100%; }
+  @media (hover: none) {
+    [data-r="quick"] { opacity: 1 !important; transform: none !important; pointer-events: auto !important; }
+  }
+  @media (max-width: 1000px) {
+    [data-r="hero"] { grid-template-columns: minmax(0, 6fr) minmax(0, 5fr) !important; }
+  }
+  @media (max-width: 860px) {
+    [data-r="nav"] { padding-left: 20px !important; padding-right: 20px !important; gap: 16px !important; }
+    [data-r="nav-links"] { display: none !important; }
+    [data-r="hero"] { grid-template-columns: minmax(0, 1fr) !important; align-items: start !important; }
+    [data-r="hero"] > figure { max-width: 74%; }
+    [data-r="pdp"], [data-r="pdp-spec"], [data-r="reviews"] { grid-template-columns: minmax(0, 1fr) !important; }
+  }
+  @media (max-width: 620px) {
+    [data-r="nav"] { flex-wrap: wrap; row-gap: 12px !important; }
+    [data-r="nav-cta"] { order: 3; flex: 1 1 100%; text-align: center; }
+    [data-r="grid"] { gap: 36px 20px !important; }
+    [data-r="hero"] > figure { max-width: 100%; }
+    [data-r="waitlist-form"] { flex-wrap: wrap; }
+    [data-r="waitlist-form"] > button { flex: 1 1 100%; }
+    [data-r="bag"] { padding: 18px !important; }
+    [data-r="toast"] { left: 16px; right: 16px; bottom: 16px; }
+    [data-r="pdp-actions"] { flex-wrap: wrap; }
+    [data-r="pdp-actions"] > button { flex: 1 1 100% !important; }
+  }
+</style>
+</helmet>
+
+<nav class="nav" data-r="nav" style="position:sticky;top:0;z-index:60;background:var(--color-bg);padding:14px max(24px, calc((100% - 1240px) / 2 + 24px));gap:28px">
+  <button type="button" class="nav-brand" onClick="{{ goHome }}" style="font-size:20px;letter-spacing:0.26em;font-weight:600;margin-right:auto;background:transparent;border:none;padding:0;cursor:pointer;font-family:var(--font-heading);color:var(--color-text)">JYGS</button>
+  <a href="#collection" data-r="nav-links">Collection</a>
+  <a href="#trending" data-r="nav-links">Trending</a>
+  <a href="#atelier" data-r="nav-links">Atelier</a>
+  <button type="button" onClick="{{ openBag }}" aria-label="Open bag" style="position:relative;display:flex;align-items:center;justify-content:center;width:34px;height:32px;padding:0;background:transparent;border:none;cursor:pointer;color:var(--color-text)">
+    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    <sc-if value="{{ hasBag }}" hint-placeholder-val="{{ false }}">
+      <span style="position:absolute;top:-1px;right:-1px;min-width:16px;height:16px;padding:0 4px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:var(--color-bg);border:1px solid var(--color-accent);color:var(--color-accent-700);font-size:10px;line-height:1;font-feature-settings:'tnum' 1">{{ cart }}</span>
+    </sc-if>
+  </button>
+  <div role="group" aria-label="Colour theme" style="display:flex;align-items:center;gap:2px;padding:2px;border:1px solid var(--color-divider);border-radius:var(--radius-md)">
+    <button type="button" onClick="{{ setLight }}" aria-label="Light theme" aria-pressed="{{ isLight }}" title="Light" style="{{ lightStyle }}">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+    </button>
+    <button type="button" onClick="{{ setDark }}" aria-label="Dark theme" aria-pressed="{{ isDark }}" title="Dark" style="{{ darkStyle }}">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+    </button>
+    <button type="button" onClick="{{ setSystem }}" aria-label="Match system theme" aria-pressed="{{ isSystem }}" title="System" style="{{ systemStyle }}">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+    </button>
+  </div>
+  <a class="btn btn-primary" href="#waitlist" data-r="nav-cta" style="text-decoration:none;font-size:13px;letter-spacing:0.06em">Join the waitlist</a>
+</nav>
+
+<sc-if value="{{ marquee }}" hint-placeholder-val="{{ true }}">
+<div style="overflow:hidden;border-bottom:1px solid var(--color-divider);padding:9px 0">
+  <div style="display:flex;width:max-content;animation:jygs-marq 34s linear infinite">
+    <div style="display:flex;gap:44px;flex:none;padding-right:44px;font-size:11.5px;letter-spacing:0.16em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 58%, transparent);white-space:nowrap;font-feature-settings:'tnum' 1">
+      <span>Volume 01 — Ash &amp; Bone</span><span style="color:var(--color-accent-700)">◦</span><span>Cut in London, sewn in Porto</span><span style="color:var(--color-accent-700)">◦</span><span>400 pieces, then the pattern rests</span><span style="color:var(--color-accent-700)">◦</span><span>Waitlist closes 12 September</span><span style="color:var(--color-accent-700)">◦</span>
+    </div>
+    <div style="display:flex;gap:44px;flex:none;padding-right:44px;font-size:11.5px;letter-spacing:0.16em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 58%, transparent);white-space:nowrap;font-feature-settings:'tnum' 1" aria-hidden="true">
+      <span>Volume 01 — Ash &amp; Bone</span><span style="color:var(--color-accent-700)">◦</span><span>Cut in London, sewn in Porto</span><span style="color:var(--color-accent-700)">◦</span><span>400 pieces, then the pattern rests</span><span style="color:var(--color-accent-700)">◦</span><span>Waitlist closes 12 September</span><span style="color:var(--color-accent-700)">◦</span>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ homeView }}" hint-placeholder-val="{{ true }}">
+<div style="max-width:1240px;margin:0 auto;padding:0 24px">
+
+  <sc-if value="{{ heroSplit }}" hint-placeholder-val="{{ true }}">
+  <section data-r="hero" style="display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:36px clamp(32px,6vw,96px);align-items:end;padding:clamp(40px,7vw,104px) 0 56px">
+    <div>
+      <h1 style="font-family:var(--font-heading);font-weight:400;font-size:clamp(46px,6.4vw,88px);line-height:1.08;letter-spacing:-0.012em;margin:0 0 0 -0.042em">
+        <span style="display:block">Clothes that outlive</span>
+        <span style="display:block">the season that</span>
+        <span style="display:block">made them.</span>
+      </h1>
+      <p style="font-size:17px;line-height:28px;max-width:52ch;margin:34px 0 0;color:color-mix(in srgb, var(--color-text) 80%, transparent)">JYGS makes a short run twice a year — outerwear, knitwear and everyday weights in cloth we can name, cut once and then left alone. Volume 01 opens to the waitlist first.</p>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:30px;align-items:center">
+        <a class="btn btn-primary" href="#waitlist" style="text-decoration:none">{{ ctaLabel }}</a>
+        <a class="btn btn-ghost" href="#collection" style="text-decoration:none">See the collection</a>
+      </div>
+      <p style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 55%, transparent);margin:26px 0 0;font-feature-settings:'tnum' 1">{{ statusNote }}</p>
+    </div>
+    <figure style="margin:0;width:100%;display:flex;flex-direction:column;gap:14px">
+      <div class="plate" onMouseEnter="{{ onHeroEnter }}" onMouseLeave="{{ onHeroLeave }}" style="position:relative;width:100%;aspect-ratio:1093/1400;overflow:hidden">
+        <sc-for list="{{ trending }}" as="t" hint-placeholder-count="5">
+          <div style="{{ t.frameStyle }}">
+            <image-slot id="{{ t.slotId }}" shape="rect" placeholder="{{ t.hint }}" style="width:100%;height:100%"></image-slot>
+          </div>
+        </sc-for>
+        <span style="position:absolute;top:14px;left:14px;background:var(--color-bg);border:1px solid var(--color-accent);color:var(--color-accent-700);padding:5px 10px;border-radius:var(--radius-md);font-size:10px;letter-spacing:0.14em;text-transform:uppercase">Trending now</span>
+        <button type="button" onClick="{{ prevTrend }}" aria-label="Previous look" style="{{ arrowLeft }}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <button type="button" onClick="{{ nextTrend }}" aria-label="Next look" style="{{ arrowRight }}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </div>
+      <figcaption style="display:flex;align-items:baseline;justify-content:space-between;gap:16px">
+        <span style="font-family:var(--font-heading);font-size:19px;line-height:1.2">{{ trendName }}</span>
+        <span style="font-size:12px;letter-spacing:0.09em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 55%, transparent);font-feature-settings:'tnum' 1">{{ trendMeta }}</span>
+      </figcaption>
+      <div role="tablist" aria-label="Trending collection" style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px">
+        <sc-for list="{{ trending }}" as="t" hint-placeholder-count="5">
+          <button type="button" role="tab" aria-selected="{{ t.active }}" aria-label="{{ t.name }}" onClick="{{ t.onPick }}" style="{{ t.thumbStyle }}">
+            <image-slot id="{{ t.slotId }}" shape="rect" placeholder="{{ t.shortHint }}" style="width:100%;height:100%;pointer-events:none"></image-slot>
+          </button>
+        </sc-for>
+      </div>
+    </figure>
+  </section>
+  </sc-if>
+
+  <sc-if value="{{ heroType }}" hint-placeholder-val="{{ false }}">
+  <section style="padding:clamp(56px,8vw,120px) 0 56px">
+    <h1 style="font-family:var(--font-heading);font-weight:400;font-size:clamp(52px,10.5vw,152px);line-height:1.02;letter-spacing:-0.02em;margin:0 0 0 -0.042em;text-align:center">
+      <span style="display:block">Volume 01</span>
+      <span style="display:block;color:var(--color-accent)">Ash &amp; Bone</span>
+    </h1>
+    <div style="display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin-top:40px;align-items:center">
+      <a class="btn btn-primary" href="#waitlist" style="text-decoration:none">{{ ctaLabel }}</a>
+      <a class="btn btn-ghost" href="#collection" style="text-decoration:none">See the collection</a>
+    </div>
+    <p style="font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 55%, transparent);margin:26px 0 0;text-align:center;font-feature-settings:'tnum' 1">{{ statusNote }}</p>
+  </section>
+  </sc-if>
+
+  <hr class="hr" style="margin:0" />
+
+  <section id="collection" data-rise style="padding:64px 0 24px">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:24px;flex-wrap:wrap">
+      <div>
+        <span style="display:block;font-size:13px;line-height:14px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:14px;font-feature-settings:'tnum' 1">Volume 01 — five pieces</span>
+        <h2 style="font-family:var(--font-heading);font-weight:400;font-size:clamp(30px,3.4vw,42px);line-height:1.14;letter-spacing:-0.008em;margin:0">Premium collection</h2>
+      </div>
+      <p style="font-size:14.5px;line-height:26px;max-width:38ch;margin:0;color:color-mix(in srgb, var(--color-text) 72%, transparent);text-align:justify;hyphens:auto">Hover a piece to see the reverse. Open any of them for the cloth, the fit and the sizes still running.</p>
+    </div>
+  </section>
+
+  <section data-rise data-r="grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:44px 28px;padding:0 0 72px">
+    <sc-for list="{{ products }}" as="p" hint-placeholder-count="4">
+      <article onMouseEnter="{{ p.onEnter }}" onMouseLeave="{{ p.onLeave }}" style="display:flex;flex-direction:column">
+        <div style="position:relative">
+          <figure class="plate" onClick="{{ p.onOpen }}" style="margin:0;position:relative;width:100%;aspect-ratio:3/4;overflow:hidden;cursor:pointer">
+            <image-slot id="{{ p.frontId }}" shape="rect" placeholder="{{ p.frontHint }}" style="position:absolute;inset:0;width:100%;height:100%"></image-slot>
+            <div style="{{ p.backStyle }}">
+              <image-slot id="{{ p.backId }}" shape="rect" placeholder="{{ p.backHint }}" style="width:100%;height:100%"></image-slot>
+            </div>
+          </figure>
+          <span class="tag tag-outline" style="position:absolute;top:14px;left:14px;background:var(--color-bg);font-size:10px;letter-spacing:0.1em;text-transform:uppercase">{{ p.badge }}</span>
+          <div data-r="quick" style="{{ p.quickStyle }}">
+            <button type="button" class="btn btn-secondary" onClick="{{ p.onOpen }}" style="flex:1;background:var(--color-bg);font-size:12px;letter-spacing:0.06em;text-transform:uppercase;min-height:34px">Details</button>
+            <button type="button" class="btn btn-secondary btn-icon" onClick="{{ p.onAdd }}" aria-label="{{ p.addLabel }}" title="{{ p.addLabel }}" style="background:var(--color-bg);width:34px;min-height:34px;flex:none">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            </button>
+          </div>
+        </div>
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-top:16px">
+          <h3 onClick="{{ p.onOpen }}" style="font-family:var(--font-heading);font-weight:400;font-size:21px;line-height:1.2;letter-spacing:-0.004em;margin:0;cursor:pointer">{{ p.name }}</h3>
+          <span style="font-size:14px;font-feature-settings:'tnum' 1;color:color-mix(in srgb, var(--color-text) 78%, transparent)">{{ p.price }}</span>
+        </div>
+        <p style="font-size:13.5px;line-height:24px;margin:8px 0 0;color:color-mix(in srgb, var(--color-text) 66%, transparent)">{{ p.cloth }}</p>
+        <div style="display:flex;gap:8px;margin-top:14px">
+          <sc-for list="{{ p.colors }}" as="c" hint-placeholder-count="3">
+            <span title="{{ c.name }}" style="{{ c.style }}"></span>
+          </sc-for>
+        </div>
+      </article>
+    </sc-for>
+  </section>
+
+  <hr class="hr" style="margin:0" />
+
+  <section id="trending" data-rise style="padding:72px 0 30px">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:24px;flex-wrap:wrap">
+      <div>
+        <span style="display:block;font-size:13px;line-height:14px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-700);margin-bottom:14px;font-feature-settings:'tnum' 1">Most wanted this month</span>
+        <h2 style="font-family:var(--font-heading);font-weight:400;font-size:clamp(30px,3.4vw,42px);line-height:1.14;letter-spacing:-0.008em;margin:0;max-width:22ch">Trending collections</h2>
+      </div>
+      <p style="font-size:14.5px;line-height:26px;max-width:38ch;margin:0;color:color-mix(in srgb, var(--color-text) 72%, transparent);text-align:justify;hyphens:auto">Ranked by what left the shelf fastest since the volume opened. Open a row for the cloth and the fit, or add your size straight from here.</p>
+    </div>
+  </section>
+
+  <section data-rise data-r="grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:44px 28px;padding:0 0 80px">
+    <sc-for list="{{ trendingList }}" as="t" hint-placeholder-count="5">
+      <article onMouseEnter="{{ t.onEnter }}" onMouseLeave="{{ t.onLeave }}" style="display:flex;flex-direction:column">
+        <div style="position:relative">
+          <figure class="plate" onClick="{{ t.onOpen }}" style="margin:0;position:relative;width:100%;aspect-ratio:3/4;overflow:hidden;cursor:pointer">
+            <image-slot id="{{ t.slotId }}" shape="rect" placeholder="{{ t.frontHint }}" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"></image-slot>
+            <div style="{{ t.backStyle }}">
+              <image-slot id="{{ t.backId }}" shape="rect" placeholder="{{ t.backHint }}" style="width:100%;height:100%;pointer-events:none"></image-slot>
+            </div>
+          </figure>
+          <span style="position:absolute;top:14px;left:14px;display:flex;align-items:center;gap:7px;background:var(--color-bg);border:1px solid var(--color-accent);border-radius:var(--radius-md);padding:5px 9px;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--color-accent-700);font-feature-settings:'tnum' 1">{{ t.rank }} · {{ t.badge }}</span>
+          <div data-r="quick" style="{{ t.quickStyle }}">
+            <button type="button" class="btn btn-secondary" onClick="{{ t.onOpen }}" style="flex:1;background:var(--color-bg);font-size:12px;letter-spacing:0.06em;text-transform:uppercase;min-height:34px">Details</button>
+            <button type="button" class="btn btn-secondary btn-icon" onClick="{{ t.onAdd }}" aria-label="{{ t.addLabel }}" title="{{ t.addLabel }}" style="background:var(--color-bg);width:34px;min-height:34px;flex:none">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            </button>
+          </div>
+        </div>
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-top:16px">
+          <h3 onClick="{{ t.onOpen }}" style="font-family:var(--font-heading);font-weight:400;font-size:21px;line-height:1.2;letter-spacing:-0.004em;margin:0;cursor:pointer">{{ t.name }}</h3>
+          <span style="font-size:14px;font-feature-settings:'tnum' 1;color:color-mix(in srgb, var(--color-text) 78%, transparent)">{{ t.price }}</span>
+        </div>
+        <p style="font-size:13.5px;line-height:24px;margin:8px 0 0;color:color-mix(in srgb, var(--color-text) 66%, transparent)">{{ t.cloth }}</p>
+        <p style="font-size:11px;letter-spacing:0.09em;text-transform:uppercase;margin:12px 0 0;color:color-mix(in srgb, var(--color-text) 48%, transparent);font-feature-settings:'tnum' 1">{{ t.meta }}</p>
+      </article>
+    </sc-for>
+  </section>
+
+  <hr class="hr" style="margin:0" />
+
+  <section id="atelier" data-rise style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:34px clamp(28px,5vw,64px);padding:64px 0 72px">
+    <div>
+      <h3 style="font-family:var(--font-heading);font-weight:400;font-size:24px;line-height:1.2;margin:0 0 14px">Short runs, on purpose</h3>
+      <p style="font-size:15px;line-height:28px;margin:0;color:color-mix(in srgb, var(--color-text) 76%, transparent);text-align:justify;hyphens:auto">Four hundred pieces per volume. When a pattern sells through we retire it rather than re-cut it thinner. The waitlist exists so we make what is wanted and not a warehouse of what isn't.</p>
+    </div>
+    <div>
+      <h3 style="font-family:var(--font-heading);font-weight:400;font-size:24px;line-height:1.2;margin:0 0 14px">Cloth we can name</h3>
+      <p style="font-size:15px;line-height:28px;margin:0;color:color-mix(in srgb, var(--color-text) 76%, transparent);text-align:justify;hyphens:auto">Japanese cotton twill, Italian wool melton, loopback from a Porto mill that has been at it since 1954. Every piece lists its mill, its weight and how it will move in the third year.</p>
+    </div>
+    <div>
+      <h3 style="font-family:var(--font-heading);font-weight:400;font-size:24px;line-height:1.2;margin:0 0 14px">Made to order, mended free</h3>
+      <p style="font-size:15px;line-height:28px;margin:0;color:color-mix(in srgb, var(--color-text) 76%, transparent);text-align:justify;hyphens:auto">Tailoring and outerwear are cut to your measurements in six weeks. Bring anything of ours back for repair, for as long as you own it — we would rather mend than sell you a second one.</p>
+    </div>
+  </section>
+
+  <hr class="hr" style="margin:0" />
+
+  <section id="waitlist" data-rise style="padding:72px 0 80px">
+    <h2 style="font-family:var(--font-heading);font-weight:400;font-size:clamp(32px,4.2vw,54px);line-height:1.1;letter-spacing:-0.01em;margin:0 0 0 -0.042em;max-width:26ch">{{ closeTitle }}</h2>
+    <p style="font-size:16px;line-height:28px;max-width:56ch;margin:26px 0 0;color:color-mix(in srgb, var(--color-text) 78%, transparent)">{{ closeCopy }}</p>
+    <sc-if value="{{ notJoined }}" hint-placeholder-val="{{ true }}">
+    <form onSubmit="{{ onJoin }}" data-r="waitlist-form" style="display:flex;gap:14px;align-items:stretch;max-width:480px;margin-top:30px">
+      <input class="input" type="email" required placeholder="you@example.com" aria-label="Email address" style="flex:1;min-height:38px" />
+      <button type="submit" class="btn btn-primary" style="min-height:38px;white-space:nowrap">{{ ctaLabel }}</button>
+    </form>
+    </sc-if>
+    <sc-if value="{{ joined }}" hint-placeholder-val="{{ false }}">
+      <p style="display:flex;align-items:center;gap:10px;font-size:15px;line-height:28px;margin:30px 0 0;color:var(--color-accent-700)">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+        You're on the list. We write once before the drop and never otherwise.
+      </p>
+    </sc-if>
+    <p style="font-size:12px;letter-spacing:0.09em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 52%, transparent);margin:20px 0 0;font-feature-settings:'tnum' 1">One letter per volume · 2,410 already waiting</p>
+  </section>
+
+  <hr class="hr" style="margin:0" />
+
+  <footer style="display:grid;grid-template-columns:minmax(0,2fr) repeat(auto-fit,minmax(130px,1fr));gap:32px clamp(24px,4vw,56px);padding:56px 0 64px;font-size:13.5px;line-height:26px">
+    <div>
+      <span style="display:block;font-family:var(--font-heading);font-size:20px;letter-spacing:0.26em;font-weight:600">JYGS</span>
+      <p style="margin:12px 0 0;max-width:30ch;color:color-mix(in srgb, var(--color-text) 62%, transparent)">Short-run clothing. Two volumes a year, mended for as long as you own them.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <span style="font-size:11px;letter-spacing:0.11em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 50%, transparent);margin-bottom:6px">Shop</span>
+      <a href="#collection">Volume 01</a><a href="#collection">Outerwear</a><a href="#collection">Knitwear</a><a href="#collection">Essentials</a>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <span style="font-size:11px;letter-spacing:0.11em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 50%, transparent);margin-bottom:6px">Atelier</span>
+      <a href="#atelier">Made to order</a><a href="#atelier">Mill notes</a><a href="#atelier">Repairs</a><a href="#trending">Trending</a>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <span style="font-size:11px;letter-spacing:0.11em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 50%, transparent);margin-bottom:6px">Help</span>
+      <a href="#waitlist">Size &amp; fit</a><a href="#waitlist">Shipping</a><a href="#waitlist">Returns</a><a href="#waitlist">Contact</a>
+    </div>
+  </footer>
+</div>
+</sc-if>
+
+<sc-if value="{{ pdpView }}" hint-placeholder-val="{{ false }}">
+<div style="max-width:1240px;margin:0 auto;padding:0 24px">
+  <nav aria-label="Breadcrumb" style="display:flex;align-items:center;gap:10px;padding:22px 0;font-size:11.5px;letter-spacing:0.09em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 50%, transparent)">
+    <button type="button" onClick="{{ goHome }}" style="background:transparent;border:none;padding:0;cursor:pointer;font:inherit;font-size:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;text-decoration:underline;text-underline-offset:3px">Volume 01</button>
+    <span aria-hidden="true">/</span>
+    <span style="color:var(--color-text)">{{ pdpName }}</span>
+  </nav>
+
+  <section data-r="pdp" style="display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:36px clamp(32px,5vw,72px);align-items:start;padding:0 0 64px">
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="plate" style="position:relative;width:100%;aspect-ratio:1093/1400;overflow:hidden">
+        <sc-for list="{{ pdpShots }}" as="sh" hint-placeholder-count="5">
+          <div style="{{ sh.frameStyle }}">
+            <image-slot id="{{ sh.slotId }}" shape="rect" placeholder="{{ sh.hint }}" style="width:100%;height:100%"></image-slot>
+          </div>
+        </sc-for>
+      </div>
+      <div role="tablist" aria-label="Product photographs" style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px">
+        <sc-for list="{{ pdpShots }}" as="sh" hint-placeholder-count="5">
+          <button type="button" role="tab" aria-selected="{{ sh.active }}" aria-label="{{ sh.label }}" onClick="{{ sh.onPick }}" style="{{ sh.thumbStyle }}">
+            <image-slot id="{{ sh.slotId }}" shape="rect" placeholder="{{ sh.label }}" style="width:100%;height:100%;pointer-events:none"></image-slot>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div>
+      <span class="tag tag-outline" style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase">{{ pdpBadge }}</span>
+      <h1 style="font-family:var(--font-heading);font-weight:400;font-size:clamp(32px,3.6vw,46px);line-height:1.1;letter-spacing:-0.01em;margin:16px 0 0">{{ pdpName }}</h1>
+      <p style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin:14px 0 0">
+        <span style="font-family:var(--font-heading);font-size:26px;font-feature-settings:'tnum' 1">{{ pdpPrice }}</span>
+        <span style="font-size:11.5px;letter-spacing:0.09em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 52%, transparent)">Free UK shipping · Duties included</span>
+      </p>
+      <p style="font-size:15px;line-height:27px;margin:18px 0 0;color:color-mix(in srgb, var(--color-text) 76%, transparent)">{{ pdpNote }}</p>
+
+      <hr class="hr" style="margin:24px 0" />
+
+      <span style="display:block;font-size:11px;letter-spacing:0.11em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 55%, transparent)">Colourway — {{ pdpColorName }}</span>
+      <div style="display:flex;gap:10px;margin-top:12px">
+        <sc-for list="{{ pdpColors }}" as="c" hint-placeholder-count="3">
+          <button type="button" onClick="{{ c.onPick }}" aria-label="{{ c.name }}" title="{{ c.name }}" style="{{ c.pickStyle }}"></button>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-top:24px">
+        <span style="font-size:11px;letter-spacing:0.11em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 55%, transparent)">Size</span>
+        <button type="button" onClick="{{ toggleGuide }}" style="background:transparent;border:none;padding:0;cursor:pointer;font:inherit;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;color:var(--color-accent-700);text-decoration:underline;text-underline-offset:3px">{{ guideLabel }}</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+        <sc-for list="{{ pdpSizes }}" as="s" hint-placeholder-count="5">
+          <button type="button" onClick="{{ s.onPick }}" disabled="{{ s.out }}" style="{{ s.style }}">{{ s.label }}</button>
+        </sc-for>
+      </div>
+      <p style="font-size:13px;line-height:23px;margin:12px 0 0;color:color-mix(in srgb, var(--color-text) 62%, transparent)">{{ pdpFitNote }}</p>
+
+      <sc-if value="{{ guideOpen }}" hint-placeholder-val="{{ false }}">
+      <table class="table" style="width:100%;margin-top:18px;font-feature-settings:'tnum' 1">
+        <thead>
+          <tr><th scope="col">Size</th><th scope="col">Chest</th><th scope="col">Waist</th><th scope="col">Length</th></tr>
+        </thead>
+        <tbody>
+          <sc-for list="{{ fitRows }}" as="r" hint-placeholder-count="5">
+            <tr><th scope="row" style="font-weight:400">{{ r.size }}</th><td>{{ r.chest }}</td><td>{{ r.waist }}</td><td>{{ r.length }}</td></tr>
+          </sc-for>
+        </tbody>
+      </table>
+      <p style="font-size:12.5px;line-height:22px;margin:10px 0 0;color:color-mix(in srgb, var(--color-text) 58%, transparent)">Garment measurements in centimetres, taken flat. Made-to-order pieces are cut to your own measurements instead.</p>
+      </sc-if>
+
+      <hr class="hr" style="margin:24px 0" />
+
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:2px;border:1px solid var(--color-divider);border-radius:var(--radius-md)">
+          <button type="button" onClick="{{ pdpLess }}" aria-label="Decrease quantity" style="{{ pdpStepStyle }}">−</button>
+          <span style="min-width:26px;text-align:center;font-size:14px;font-feature-settings:'tnum' 1">{{ pdpQty }}</span>
+          <button type="button" onClick="{{ pdpMore }}" aria-label="Increase quantity" style="{{ pdpStepStyle }}">+</button>
+        </div>
+        <span style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 52%, transparent)">{{ pdpLineTotal }}</span>
+      </div>
+      <div data-r="pdp-actions" style="display:flex;gap:12px;margin-top:16px">
+        <button type="button" class="btn btn-primary" onClick="{{ pdpAdd }}" disabled="{{ pdpUnavailable }}" style="flex:1">{{ pdpAddLabel }}</button>
+        <button type="button" class="btn btn-secondary" onClick="{{ pdpBuy }}" disabled="{{ pdpUnavailable }}" style="flex:1">Buy it now</button>
+      </div>
+
+      <ul style="list-style:none;margin:24px 0 0;padding:0;display:grid;gap:10px;font-size:13.5px;line-height:23px;color:color-mix(in srgb, var(--color-text) 72%, transparent)">
+        <li style="display:flex;gap:10px"><span style="color:var(--color-accent-700)">—</span>{{ pdpDelivery }}</li>
+        <li style="display:flex;gap:10px"><span style="color:var(--color-accent-700)">—</span>Thirty days to return it unworn, postage on us.</li>
+        <li style="display:flex;gap:10px"><span style="color:var(--color-accent-700)">—</span>Mended free for as long as you own it.</li>
+      </ul>
+    </div>
+  </section>
+
+  <hr class="hr" style="margin:0" />
+
+  <section data-r="pdp-spec" style="display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:36px clamp(32px,5vw,72px);align-items:start;padding:56px 0 64px">
+    <div>
+      <h2 style="font-family:var(--font-heading);font-weight:400;font-size:clamp(26px,2.8vw,34px);line-height:1.16;margin:0 0 22px">The cloth, in detail</h2>
+      <table class="table" style="width:100%">
+        <tbody>
+          <sc-for list="{{ pdpSpec }}" as="row" hint-placeholder-count="6">
+            <tr>
+              <th scope="row" style="width:34%;font-weight:400;font-size:11.5px;letter-spacing:0.09em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 55%, transparent)">{{ row.k }}</th>
+              <td style="font-size:14.5px;line-height:25px">{{ row.v }}</td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h3 style="font-family:var(--font-heading);font-weight:400;font-size:22px;line-height:1.2;margin:0 0 14px">Care</h3>
+      <p style="font-size:14.5px;line-height:26px;margin:0;color:color-mix(in srgb, var(--color-text) 74%, transparent);text-align:justify;hyphens:auto">{{ pdpCare }}</p>
+      <h3 style="font-family:var(--font-heading);font-weight:400;font-size:22px;line-height:1.2;margin:28px 0 14px">Where it was made</h3>
+      <p style="font-size:14.5px;line-height:26px;margin:0;color:color-mix(in srgb, var(--color-text) 74%, transparent);text-align:justify;hyphens:auto">{{ pdpOrigin }}</p>
+    </div>
+  </section>
+
+  <hr class="hr" style="margin:0" />
+
+  <section data-r="reviews" style="display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:44px clamp(32px,5vw,72px);align-items:start;padding:56px 0 80px">
+    <div>
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:24px;flex-wrap:wrap">
+        <h2 style="font-family:var(--font-heading);font-weight:400;font-size:clamp(26px,2.8vw,34px);line-height:1.16;margin:0">Worn and reported on</h2>
+        <span style="display:flex;align-items:baseline;gap:12px">
+          <span style="font-family:var(--font-heading);font-size:30px;line-height:1;font-feature-settings:'tnum' 1">{{ avgRating }}</span>
+          <span style="font-size:12px;letter-spacing:0.09em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 52%, transparent);font-feature-settings:'tnum' 1">{{ reviewCountLabel }}</span>
+        </span>
+      </div>
+
+      <dl style="display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px 14px;align-items:center;margin:26px 0 0;font-size:12px;font-feature-settings:'tnum' 1">
+        <sc-for list="{{ ratingBars }}" as="r" hint-placeholder-count="5">
+          <dt style="color:color-mix(in srgb, var(--color-text) 55%, transparent)">{{ r.label }}</dt>
+          <dd style="margin:0;height:5px;border:1px solid var(--color-divider);border-radius:3px;overflow:hidden">
+            <span style="{{ r.barStyle }}"></span>
+          </dd>
+          <dd style="margin:0;color:color-mix(in srgb, var(--color-text) 45%, transparent)">{{ r.count }}</dd>
+        </sc-for>
+      </dl>
+
+      <p style="font-size:13px;line-height:23px;margin:18px 0 0;color:color-mix(in srgb, var(--color-text) 60%, transparent)">{{ fitVerdict }}</p>
+
+      <hr class="hr" style="margin:28px 0 0" />
+
+      <ol style="list-style:none;margin:0;padding:0">
+        <sc-for list="{{ reviews }}" as="rv" hint-placeholder-count="3">
+          <li style="padding:26px 0;border-bottom:1px solid var(--color-divider)">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap">
+              <span style="display:flex;align-items:center;gap:10px">
+                <span aria-label="{{ rv.starsLabel }}" style="letter-spacing:0.14em;font-size:13px;color:var(--color-accent-700)">{{ rv.stars }}</span>
+                <span style="font-family:var(--font-heading);font-size:18px;line-height:1.2">{{ rv.title }}</span>
+              </span>
+              <span style="font-size:11px;letter-spacing:0.09em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 45%, transparent);font-feature-settings:'tnum' 1">{{ rv.date }}</span>
+            </div>
+            <p style="font-size:14.5px;line-height:26px;margin:12px 0 0;color:color-mix(in srgb, var(--color-text) 76%, transparent);text-align:justify;hyphens:auto">{{ rv.body }}</p>
+            <p style="font-size:11.5px;letter-spacing:0.08em;text-transform:uppercase;margin:12px 0 0;color:color-mix(in srgb, var(--color-text) 48%, transparent)">{{ rv.meta }}</p>
+          </li>
+        </sc-for>
+      </ol>
+    </div>
+
+    <div style="border:1px solid var(--color-divider);border-radius:var(--radius-md);padding:24px">
+      <h3 style="font-family:var(--font-heading);font-weight:400;font-size:22px;line-height:1.2;margin:0">Write a review</h3>
+      <p style="font-size:13.5px;line-height:24px;margin:10px 0 0;color:color-mix(in srgb, var(--color-text) 66%, transparent)">Tell us how it wore in, not how it looked in the photograph. We publish the unflattering ones too.</p>
+
+      <sc-if value="{{ reviewFormOpen }}" hint-placeholder-val="{{ true }}">
+      <form onSubmit="{{ onReviewSubmit }}" style="display:grid;gap:14px;margin-top:22px">
+        <div>
+          <span style="display:block;font-size:11px;letter-spacing:0.11em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 55%, transparent)">Your rating</span>
+          <div role="radiogroup" aria-label="Your rating" style="display:flex;gap:6px;margin-top:10px">
+            <sc-for list="{{ ratingPicks }}" as="rp" hint-placeholder-count="5">
+              <button type="button" role="radio" aria-checked="{{ rp.on }}" aria-label="{{ rp.label }}" onClick="{{ rp.onPick }}" style="{{ rp.style }}">★</button>
+            </sc-for>
+          </div>
+        </div>
+        <div class="field">
+          <label for="rv-name">Name</label>
+          <input class="input" id="rv-name" name="name" type="text" required placeholder="How it should appear" />
+        </div>
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px">
+          <div class="field">
+            <label for="rv-size">Size worn</label>
+            <select class="input" id="rv-size" name="size" defaultValue="{{ reviewSizeDefault }}" style="font-feature-settings:'tnum' 1">
+              <sc-for list="{{ reviewSizeOptions }}" as="o" hint-placeholder-count="5">
+                <option value="{{ o.value }}">{{ o.label }}</option>
+              </sc-for>
+            </select>
+          </div>
+          <div class="field">
+            <label for="rv-fit">How it fits</label>
+            <select class="input" id="rv-fit" name="fit" defaultValue="True to size">
+              <option value="Runs small">Runs small</option>
+              <option value="True to size">True to size</option>
+              <option value="Runs large">Runs large</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="rv-title">Headline</label>
+          <input class="input" id="rv-title" name="title" type="text" required placeholder="One line" />
+        </div>
+        <div class="field">
+          <label for="rv-body">Your review</label>
+          <textarea class="input" id="rv-body" name="body" rows="5" required placeholder="What did the cloth do after a month?" style="resize:vertical;font-family:var(--font-body);line-height:24px"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Post review</button>
+        <p style="font-size:11.5px;line-height:20px;margin:0;color:color-mix(in srgb, var(--color-text) 48%, transparent)">Published as written, once we can match it to an order.</p>
+      </form>
+      </sc-if>
+
+      <sc-if value="{{ reviewThanks }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:14px;margin-top:22px">
+        <span style="display:flex;align-items:center;gap:10px;font-size:14.5px;line-height:26px;color:var(--color-accent-700)">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+          Posted — thank you.
+        </span>
+        <p style="font-size:14px;line-height:25px;margin:0;color:color-mix(in srgb, var(--color-text) 70%, transparent)">It is at the top of the list now. We read every one before the next volume is cut.</p>
+        <button type="button" class="btn btn-ghost" onClick="{{ writeAnother }}" style="align-self:flex-start">Write another</button>
+      </div>
+      </sc-if>
+    </div>
+  </section>
+</div>
+</sc-if>
+
+<sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+<div role="status" data-r="toast" style="position:fixed;right:24px;bottom:24px;z-index:85;display:flex;align-items:center;gap:14px;background:var(--color-bg);border:1px solid var(--color-accent);border-radius:var(--radius-md);padding:12px 16px;box-shadow:var(--shadow-md)">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent-700)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+  <span style="font-size:13.5px">{{ toast }}</span>
+  <button type="button" onClick="{{ viewBagFromToast }}" style="background:transparent;border:none;padding:0;cursor:pointer;font:inherit;font-size:12px;letter-spacing:0.07em;text-transform:uppercase;color:var(--color-accent-700);text-decoration:underline;text-underline-offset:3px">View bag</button>
+</div>
+</sc-if>
+
+<sc-if value="{{ bagOpen }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ closeBag }}" style="position:fixed;inset:0;z-index:90;display:flex;justify-content:flex-end;background:color-mix(in srgb, #201f1d 42%, transparent)">
+  <aside role="dialog" aria-modal="true" aria-label="Your bag" onClick="{{ stop }}" data-r="bag" style="background:var(--color-bg);border-left:1px solid var(--color-divider);width:min(420px,100%);height:100%;display:flex;flex-direction:column;padding:24px">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px">
+      <h2 style="font-family:var(--font-heading);font-weight:400;font-size:28px;line-height:1.14;margin:0">{{ panelTitle }}</h2>
+      <button type="button" onClick="{{ closeBag }}" aria-label="Close bag" style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;padding:0;background:transparent;border:none;cursor:pointer;color:color-mix(in srgb, var(--color-text) 60%, transparent)">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <sc-if value="{{ inCheckout }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;gap:8px;margin-top:16px">
+        <sc-for list="{{ steps }}" as="s" hint-placeholder-count="3">
+          <div style="{{ s.style }}">
+            <span style="font-feature-settings:'tnum' 1">{{ s.num }}</span>
+            <span>{{ s.label }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+    <hr class="hr" style="margin:18px 0 0" />
+
+    <sc-if value="{{ bagView }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column">
+      <sc-for list="{{ bagItems }}" as="b" hint-placeholder-count="2">
+        <div style="display:grid;grid-template-columns:64px minmax(0,1fr);gap:16px;padding:20px 0;border-bottom:1px solid var(--color-divider)">
+          <figure class="plate" style="margin:0;width:64px;aspect-ratio:3/4;overflow:hidden">
+            <image-slot id="{{ b.slotId }}" shape="rect" placeholder="{{ b.name }}" style="width:100%;height:100%;pointer-events:none"></image-slot>
+          </figure>
+          <div>
+            <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
+              <h3 style="font-family:var(--font-heading);font-weight:400;font-size:18px;line-height:1.2;margin:0">{{ b.name }}</h3>
+              <span style="font-size:13.5px;font-feature-settings:'tnum' 1;color:color-mix(in srgb, var(--color-text) 78%, transparent)">{{ b.line }}</span>
+            </div>
+            <p style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;margin:8px 0 0;color:color-mix(in srgb, var(--color-text) 55%, transparent)">{{ b.variant }}</p>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px">
+              <sc-if value="{{ b.editableSize }}" hint-placeholder-val="{{ true }}">
+              <label style="display:flex;align-items:center;gap:6px;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 52%, transparent)">
+                Size
+                <select class="input" aria-label="Size" value="{{ b.size }}" onChange="{{ b.onSize }}" style="padding:5px 8px;font-size:13px;font-feature-settings:'tnum' 1">
+                  <sc-for list="{{ b.sizeOptions }}" as="o" hint-placeholder-count="5">
+                    <option value="{{ o.value }}" disabled="{{ o.disabled }}">{{ o.label }}</option>
+                  </sc-for>
+                </select>
+              </label>
+              </sc-if>
+              <sc-if value="{{ b.fixedSize }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-accent-700)">Cut to measure</span>
+              </sc-if>
+              <div style="display:flex;align-items:center;gap:2px;border:1px solid var(--color-divider);border-radius:var(--radius-md)">
+                <button type="button" onClick="{{ b.onLess }}" aria-label="Decrease quantity" style="{{ b.stepStyle }}">−</button>
+                <span style="min-width:22px;text-align:center;font-size:13.5px;font-feature-settings:'tnum' 1">{{ b.qty }}</span>
+                <button type="button" onClick="{{ b.onMore }}" aria-label="Increase quantity" style="{{ b.stepStyle }}">+</button>
+              </div>
+              <button type="button" onClick="{{ b.onRemove }}" style="background:transparent;border:none;padding:0;cursor:pointer;font:inherit;font-size:12px;letter-spacing:0.06em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 52%, transparent);text-decoration:underline;text-underline-offset:3px">Remove</button>
+            </div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="padding-top:20px">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px">
+        <span style="font-size:12px;letter-spacing:0.09em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 58%, transparent)">Subtotal</span>
+        <span style="font-family:var(--font-heading);font-size:24px;font-feature-settings:'tnum' 1">{{ bagTotal }}</span>
+      </div>
+      <p style="font-size:12.5px;line-height:22px;margin:10px 0 0;color:color-mix(in srgb, var(--color-text) 60%, transparent)">Shipping and duties calculated at checkout. Made-to-order pieces ship in six weeks.</p>
+      <button type="button" class="btn btn-primary btn-block" onClick="{{ startCheckout }}" style="margin-top:16px">Checkout — {{ bagTotal }}</button>
+      <button type="button" class="btn btn-ghost btn-block" onClick="{{ closeBag }}" style="margin-top:8px">Keep looking</button>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ detailsView }}" hint-placeholder-val="{{ false }}">
+    <form onSubmit="{{ onDetails }}" style="flex:1;display:flex;flex-direction:column;overflow-y:auto;padding-top:20px">
+      <div style="display:grid;gap:14px">
+        <div class="field">
+          <label for="ck-email">Email</label>
+          <input class="input" id="ck-email" name="email" type="email" required placeholder="you@example.com" />
+        </div>
+        <div class="field">
+          <label for="ck-name">Full name</label>
+          <input class="input" id="ck-name" name="name" type="text" required placeholder="As it appears on the card" />
+        </div>
+        <div class="field">
+          <label for="ck-addr">Address</label>
+          <input class="input" id="ck-addr" name="addr" type="text" required placeholder="Street and number" />
+        </div>
+        <div style="display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:14px">
+          <div class="field">
+            <label for="ck-city">City</label>
+            <input class="input" id="ck-city" name="city" type="text" required placeholder="London" />
+          </div>
+          <div class="field">
+            <label for="ck-post">Postcode</label>
+            <input class="input" id="ck-post" name="post" type="text" required placeholder="E2 7DP" />
+          </div>
+        </div>
+        <div class="field">
+          <label for="ck-country">Country</label>
+          <input class="input" id="ck-country" name="country" type="text" required value="United Kingdom" />
+        </div>
+      </div>
+      <div style="margin-top:auto;padding-top:24px">
+        <hr class="hr" style="margin:0 0 16px" />
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px">
+          <span style="font-size:12px;letter-spacing:0.09em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 58%, transparent)">{{ bagCountLabel }}</span>
+          <span style="font-family:var(--font-heading);font-size:22px;font-feature-settings:'tnum' 1">{{ bagTotal }}</span>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" style="margin-top:16px">Continue to payment</button>
+        <button type="button" class="btn btn-ghost btn-block" onClick="{{ backToBag }}" style="margin-top:8px">Back to bag</button>
+      </div>
+    </form>
+    </sc-if>
+
+    <sc-if value="{{ paymentView }}" hint-placeholder-val="{{ false }}">
+    <form onSubmit="{{ onPay }}" style="flex:1;display:flex;flex-direction:column;overflow-y:auto;padding-top:20px">
+      <p style="font-size:13px;line-height:23px;margin:0 0 18px;color:color-mix(in srgb, var(--color-text) 66%, transparent)">Shipping to {{ shipTo }} · <a href="#waitlist" onClick="{{ onEditDetails }}">edit</a></p>
+      <div style="display:grid;gap:14px">
+        <div class="field">
+          <label for="ck-card">Card number</label>
+          <input class="input" id="ck-card" name="card" type="text" inputmode="numeric" required placeholder="4242 4242 4242 4242" style="font-feature-settings:'tnum' 1" />
+        </div>
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px">
+          <div class="field">
+            <label for="ck-exp">Expiry</label>
+            <input class="input" id="ck-exp" name="exp" type="text" inputmode="numeric" required placeholder="09 / 29" style="font-feature-settings:'tnum' 1" />
+          </div>
+          <div class="field">
+            <label for="ck-cvc">CVC</label>
+            <input class="input" id="ck-cvc" name="cvc" type="text" inputmode="numeric" required placeholder="123" style="font-feature-settings:'tnum' 1" />
+          </div>
+        </div>
+      </div>
+      <hr class="hr" style="margin:22px 0" />
+      <div style="display:grid;gap:9px;font-size:13.5px">
+        <sc-for list="{{ bagItems }}" as="b" hint-placeholder-count="2">
+          <div style="display:flex;justify-content:space-between;gap:16px;color:color-mix(in srgb, var(--color-text) 74%, transparent)">
+            <span>{{ b.summaryLabel }}</span>
+            <span style="font-feature-settings:'tnum' 1">{{ b.line }}</span>
+          </div>
+        </sc-for>
+        <div style="display:flex;justify-content:space-between;gap:16px;color:color-mix(in srgb, var(--color-text) 74%, transparent)">
+          <span>Shipping — tracked, two days</span>
+          <span style="font-feature-settings:'tnum' 1">Free</span>
+        </div>
+      </div>
+      <div style="margin-top:auto;padding-top:24px">
+        <hr class="hr" style="margin:0 0 16px" />
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px">
+          <span style="font-size:12px;letter-spacing:0.09em;text-transform:uppercase;color:color-mix(in srgb, var(--color-text) 58%, transparent)">Total</span>
+          <span style="font-family:var(--font-heading);font-size:24px;font-feature-settings:'tnum' 1">{{ bagTotal }}</span>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" disabled="{{ paying }}" style="margin-top:16px">{{ payLabel }}</button>
+        <button type="button" class="btn btn-ghost btn-block" onClick="{{ onEditDetails }}" style="margin-top:8px">Back to details</button>
+      </div>
+    </form>
+    </sc-if>
+
+    <sc-if value="{{ doneView }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px;padding-top:20px">
+      <span style="display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;border:1px solid var(--color-accent);color:var(--color-accent-700)">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+      </span>
+      <h3 style="font-family:var(--font-heading);font-weight:400;font-size:26px;line-height:1.16;margin:0">Order {{ orderNo }} is placed.</h3>
+      <p style="font-size:14.5px;line-height:26px;margin:0;color:color-mix(in srgb, var(--color-text) 72%, transparent)">A receipt is on its way to {{ orderEmail }}. {{ orderSummary }} — {{ orderShipNote }}, and we mend it free for as long as you own it.</p>
+      <dl style="display:grid;grid-template-columns:auto 1fr;gap:8px 20px;margin:8px 0 0;font-size:13.5px">
+        <dt style="color:color-mix(in srgb, var(--color-text) 55%, transparent)">Paid</dt>
+        <dd style="margin:0;font-feature-settings:'tnum' 1">{{ paidTotal }}</dd>
+        <dt style="color:color-mix(in srgb, var(--color-text) 55%, transparent)">Ships to</dt>
+        <dd style="margin:0">{{ shipTo }}</dd>
+      </dl>
+      <button type="button" class="btn btn-primary" onClick="{{ finishOrder }}" style="align-self:flex-start;margin-top:8px">Back to Volume 01</button>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ emptyView }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px;text-align:left">
+      <h3 style="font-family:var(--font-heading);font-weight:400;font-size:22px;line-height:1.2;margin:0">Nothing in the bag yet.</h3>
+      <p style="font-size:14.5px;line-height:26px;margin:0;color:color-mix(in srgb, var(--color-text) 70%, transparent)">Volume 01 is five pieces. Open any of them for the cloth, the fit and the sizes still running.</p>
+      <a class="btn btn-primary" href="#collection" onClick="{{ closeBag }}" style="text-decoration:none;align-self:flex-start">See the collection</a>
+    </div>
+    </sc-if>
+  </aside>
+</div>
+</sc-if>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;themeDefault&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;System&quot;,&quot;Light&quot;,&quot;Dark&quot;],&quot;default&quot;:&quot;System&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Theme&quot;},&quot;heroTreatment&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Split with plate&quot;,&quot;Full-width type&quot;],&quot;default&quot;:&quot;Split with plate&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Layout&quot;},&quot;showMarquee&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Layout&quot;},&quot;dropStatus&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Waitlist open&quot;,&quot;Made to order&quot;,&quot;Sold out&quot;],&quot;default&quot;:&quot;Waitlist open&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Content&quot;}}">
+const SIZES = ['XS', 'S', 'M', 'L', 'XL'];
+
+const PRODUCTS = [
+  { id: 'overshirt', name: 'The Ash Overshirt', price: '£245', badge: 'Volume 01',
+    cloth: 'Japanese cotton twill, 9.5oz — unlined, boxy.',
+    note: 'Cut straight through the body with a dropped shoulder, so it layers over knitwear without pulling. Twill from Okayama, washed once before making so it stays the size you bought.',
+    colors: [{ name: 'Bone', hex: '#e6e0d5' }, { name: 'Ash', hex: '#9a9691' }, { name: 'Ink', hex: '#23211f' }],
+    out: ['XS'] },
+  { id: 'hoodie', name: 'Loopback Hoodie', price: '£180', badge: 'Restocked',
+    cloth: 'Porto loopback, 480gsm — dense, dry hand.',
+    note: 'Heavier than it looks and cut a size closer than the market. It will keep its shape through a hundred washes; the hood will not go soft on you in the first month.',
+    colors: [{ name: 'Chalk', hex: '#f0ece4' }, { name: 'Sable', hex: '#4a3c2f' }],
+    out: [] },
+  { id: 'overcoat', name: 'Sable Wool Overcoat', price: '£620', badge: 'Made to order',
+    cloth: 'Italian wool melton, 720gsm — half-canvassed.',
+    note: 'Six weeks from your measurements, single-breasted, with a sleeve you can actually reach in. Melton woven in Biella; the canvas is stitched, not glued, so the chest breaks in to your posture.',
+    colors: [{ name: 'Sable', hex: '#4a3c2f' }, { name: 'Ink', hex: '#23211f' }],
+    out: [] },
+  { id: 'slip', name: 'Bias-Cut Slip Dress', price: '£210', badge: 'Few left',
+    cloth: 'Sandwashed silk, 19mm — cut on the true bias.',
+    note: 'The bias does the fitting, so it reads close without gripping. Finished with a French seam throughout and a strap you can shorten yourself by two centimetres.',
+    colors: [{ name: 'Bone', hex: '#e6e0d5' }, { name: 'Clay', hex: '#b08a6e' }, { name: 'Ink', hex: '#23211f' }],
+    out: ['XL'] },
+  { id: 'crew', name: 'Ribbed Merino Crew', price: '£165', badge: 'Volume 01',
+    cloth: 'Extra-fine merino, 12gg — full-needle rib.',
+    note: 'Knitted in one piece on a twelve-gauge frame, so the rib runs unbroken over the shoulder. Close through the body without gripping, and it holds its neck after a winter of pulling it on.',
+    colors: [{ name: 'Bone', hex: '#e6e0d5' }, { name: 'Ash', hex: '#9a9691' }, { name: 'Ink', hex: '#23211f' }],
+    out: ['XS'] }
+];
+
+const SHOTS = [
+  { key: 'front', label: 'Front' },
+  { key: 'back', label: 'Reverse' },
+  { key: 'shot-3', label: 'Detail' },
+  { key: 'shot-4', label: 'On figure' },
+  { key: 'shot-5', label: 'Cloth' }
+];
+
+const SPECS = {
+  overshirt: {
+    mill: 'Kuroki, Okayama — weaving since 1950',
+    weight: '9.5oz / 322gsm',
+    fit: 'Boxy, dropped shoulder, straight hem',
+    finishing: 'Flat-felled seams, corozo buttons',
+    fitNote: 'Model is 183cm and wears M. Sits one size loose by design — take your usual size.',
+    delivery: 'In stock — ships in two working days.',
+    care: 'Machine wash cold on a short cycle and line dry. The twill was washed once before making, so it will not shrink further; it softens for about six months and then holds.',
+    origin: 'Cloth woven in Okayama, cut and sewn in our Porto workshop in a run of four hundred. The pattern retires when the run sells through.'
+  },
+  hoodie: {
+    mill: 'Somelos, Porto — at it since 1954',
+    weight: '480gsm loopback',
+    fit: 'Close through the body, ribbed cuff',
+    finishing: 'Twin-needle seams, unbrushed loopback',
+    fitNote: 'Model is 178cm and wears M. Cut a size closer than the market — size up for room.',
+    delivery: 'Restocked — ships in two working days.',
+    care: 'Wash cold inside out, dry flat. Do not tumble: the loopback keeps its density and the hood keeps its structure if you let it dry in its own time.',
+    origin: 'Knitted, dyed and sewn within twenty kilometres in northern Portugal, on a mill floor we visit twice a year.'
+  },
+  overcoat: {
+    mill: 'Vitale Barberis, Biella',
+    weight: '720gsm wool melton',
+    fit: 'Single-breasted, half-canvassed',
+    finishing: 'Stitched canvas, horn buttons, Bemberg lining',
+    fitNote: 'Cut to your measurements — no size chart. A fitting takes ten minutes by post.',
+    delivery: 'Made to order — six weeks from your measurements.',
+    care: 'Brush after wearing, air rather than dry-clean, and press with a cloth. Clean once a season at most; melton dislikes solvent more than it dislikes rain.',
+    origin: 'Melton woven in Biella, made up by two coatmakers in Porto. The chest canvas is stitched, not glued, so it breaks in to your posture.'
+  },
+  slip: {
+    mill: 'Sandwashed silk, 19mm',
+    weight: '19mm / 84gsm',
+    fit: 'True bias, adjustable strap',
+    finishing: 'French seams throughout, rolled hem',
+    fitNote: 'Model is 175cm and wears S. The bias does the fitting — size down if between.',
+    delivery: 'Few left — ships in two working days.',
+    care: 'Hand wash cool with a little soap, roll in a towel, hang damp. Iron on the reverse at silk setting; the sandwash returns as it dries.',
+    origin: 'Silk sandwashed in Como and cut on the true bias in Porto, which takes twice the cloth and half again the time.'
+  },
+  crew: {
+    mill: 'Todd & Duncan, Kinross',
+    weight: '12gg extra-fine merino',
+    fit: 'Close body, full-needle rib, set-in sleeve',
+    finishing: 'Linked shoulders, hand-finished neck',
+    fitNote: 'Model is 180cm and wears M. True to size — the rib gives where it needs to.',
+    delivery: 'In stock — ships in two working days.',
+    care: 'Hand wash cool or use a wool cycle, then dry flat. Never hang it wet: merino holds water heavily and the shoulder will drop if you let it.',
+    origin: 'Yarn spun in Kinross, knitted and linked in Porto on a twelve-gauge frame in a run of four hundred.'
+  }
+};
+
+const REVIEWS = {
+  overshirt: [
+    { rating: 5, title: 'Softened without slumping', name: 'Anouk R.', size: 'M', fit: 'True to size', date: 'July 2026', body: 'Six months of near-daily wear and it has gone from board-stiff to something that falls properly, without the shoulder collapsing the way cheap twill does. The dropped shoulder is the whole point — it goes over a heavy crew and still buttons.' },
+    { rating: 4, title: 'Sleeves run long', name: 'Tomás L.', size: 'L', fit: 'Runs large', date: 'June 2026', body: 'No complaints about the cloth, but I had two centimetres taken off each cuff. If you are under six foot expect a small alteration. The corozo buttons are the real tell that someone was paying attention.' },
+    { rating: 5, title: 'The only shirt I packed', name: 'Devi S.', size: 'S', fit: 'True to size', date: 'May 2026', body: 'Wore it four days running on a trip and it never looked slept in. Rinsed it in a hotel sink and it dried by morning.' }
+  ],
+  hoodie: [
+    { rating: 5, title: 'Heavier than the photographs suggest', name: 'Marcus O.', size: 'M', fit: 'Runs small', date: 'August 2026', body: 'It arrived and I genuinely weighed it. Four hundred and eighty grams reads as outerwear in autumn. Cut close, so I would size up if you want it slouchy — I did not, and it is right.' },
+    { rating: 4, title: 'Hood holds its shape', name: 'Priya N.', size: 'L', fit: 'True to size', date: 'June 2026', body: 'Twelve washes in and the hood still stands up. That is the thing that usually goes first. Half a star off because the dry loopback catches on rings.' }
+  ],
+  overcoat: [
+    { rating: 5, title: 'Worth the six weeks', name: 'Elena V.', size: 'Made to measure', fit: 'True to size', date: 'July 2026', body: 'I sent measurements by post with the tape they included and it came back fitting through the shoulder in a way no shop coat has. The stitched canvas has already started to take my posture.' },
+    { rating: 5, title: 'A sleeve you can reach in', name: 'Callum B.', size: 'Made to measure', fit: 'True to size', date: 'April 2026', body: 'Sounds trivial until you own a coat you cannot drive in. Melton sheds a shower and airs out overnight. Have not dry-cleaned it once.' }
+  ],
+  slip: [
+    { rating: 5, title: 'The bias does the work', name: 'Yara M.', size: 'S', fit: 'True to size', date: 'August 2026', body: 'Close without gripping anywhere, which is the whole difference between a bias cut and a straight one. French seams inside, so nothing scratches.' },
+    { rating: 4, title: 'Size down if between', name: 'Noor H.', size: 'M', fit: 'Runs large', date: 'June 2026', body: 'Beautiful sandwash and it returns after washing exactly as promised. I should have taken the S — the M sits a little away from the body at the hip.' }
+  ],
+  crew: [
+    { rating: 5, title: 'Rib runs unbroken', name: 'Sofia K.', size: 'M', fit: 'True to size', date: 'August 2026', body: 'You can see the twelve-gauge in how the rib carries over the shoulder without a seam interrupting it. Neck has not gone slack after a winter of pulling it on.' },
+    { rating: 4, title: 'Fine merino, so treat it as such', name: 'James P.', size: 'L', fit: 'True to size', date: 'May 2026', body: 'Warmer than the weight implies and no itch at all. Dry it flat — I hung one wet early on and learned the lesson quickly.' }
+  ]
+};
+
+const FIT_TABLE = [
+  { size: 'XS', chest: '96', waist: '80', length: '66' },
+  { size: 'S', chest: '102', waist: '86', length: '68' },
+  { size: 'M', chest: '108', waist: '92', length: '70' },
+  { size: 'L', chest: '114', waist: '98', length: '72' },
+  { size: 'XL', chest: '120', waist: '104', length: '74' }
+];
+
+const TRENDING = [
+  { id: 'overshirt', name: 'The Ash Overshirt', meta: 'Look 01 · £245' },
+  { id: 'overcoat', name: 'Sable Wool Overcoat', meta: 'Look 02 · £620' },
+  { id: 'hoodie', name: 'Loopback Hoodie', meta: 'Look 03 · £180' },
+  { id: 'slip', name: 'Bias-Cut Slip Dress', meta: 'Look 04 · £210' },
+  { id: 'crew', name: 'Ribbed Merino Crew', meta: 'Look 05 · £165' }
+];
+
+const SWATCH = (hex, active) => ({
+  width: '15px', height: '15px', borderRadius: '50%', background: hex, display: 'block',
+  boxSizing: 'border-box', padding: 0, cursor: 'pointer',
+  border: '1px solid ' + (active ? 'var(--color-accent)' : 'color-mix(in srgb, var(--color-text) 30%, transparent)'),
+  outline: active ? '1px solid var(--color-accent)' : 'none', outlineOffset: '2px'
+});
+
+class Component extends DCLogic {
+  state = { hover: null, thover: null, bag: [], bagOpen: false, step: 0, order: null, paying: false, joined: false, theme: 'system', trend: 0, heroHover: false, pdp: null, pdpSize: 'M', pdpColor: 0, pdpQty: 1, pdpShot: 0, guideOpen: false, reviewRating: 5, reviewSent: false, myReviews: {} };
+
+  openProduct(id) {
+    this.setState({ pdp: id, pdpSize: 'M', pdpColor: 0, pdpQty: 1, pdpShot: 0, guideOpen: false, bagOpen: false, reviewSent: false, reviewRating: 5 });
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }
+
+  startTrendTimer() {
+    clearInterval(this._trendTimer);
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    this._trendTimer = setInterval(
+      () => this.setState(s => ({ trend: (s.trend + 1) % TRENDING.length })),
+      5200
+    );
+  }
+
+  addLine(product, colorName, size, qty, buyNow) {
+    const key = product.id + '|' + colorName + '|' + size;
+    const add = qty || 1;
+    this.setState(s => {
+      const at = s.bag.findIndex(b => b.key === key);
+      const bag = at > -1
+        ? s.bag.map((b, j) => (j === at ? { ...b, qty: b.qty + add } : b))
+        : s.bag.concat({
+            key, pid: product.id, name: product.name, color: colorName, size, qty: add,
+            unit: Number(product.price.replace(/[^0-9]/g, ''))
+          });
+      if (buyNow) return { bag, toast: null, bagOpen: true, step: 1 };
+      return { bag, toast: product.name + ' · ' + size + ' added to bag' };
+    });
+    if (buyNow) return;
+    clearTimeout(this._toastTimer);
+    this._toastTimer = setTimeout(() => this.setState({ toast: null }), 2800);
+  }
+
+  changeLineSize(index, size) {
+    this.setState(s => {
+      const line = s.bag[index];
+      if (!line || line.size === size) return null;
+      const key = line.pid + '|' + line.color + '|' + size;
+      const at = s.bag.findIndex((b, j) => j !== index && b.key === key);
+      if (at > -1) {
+        return { bag: s.bag
+          .map((b, j) => (j === at ? { ...b, qty: b.qty + line.qty } : b))
+          .filter((b, j) => j !== index) };
+      }
+      return { bag: s.bag.map((b, j) => (j === index ? { ...b, key, size } : b)) };
+    });
+  }
+
+  goTrend = i => {
+    this.setState({ trend: (i + TRENDING.length) % TRENDING.length });
+    this.startTrendTimer();
+  };
+
+  componentWillUnmount() {
+    clearInterval(this._trendTimer);
+    clearTimeout(this._toastTimer);
+    if (this._mq) this._mq.removeEventListener('change', this._onSys);
+  }
+
+  applyTheme(pref) {
+    const sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const resolved = pref === 'system' ? (sysDark ? 'dark' : 'light') : pref;
+    document.documentElement.setAttribute('data-jygs-theme', resolved);
+  }
+
+  setTheme = pref => {
+    try { localStorage.setItem('jygs-theme', pref); } catch (e) {}
+    this.applyTheme(pref);
+    this.setState({ theme: pref });
+  };
+
+  componentDidUpdate(prevProps) {
+    const prev = prevProps.themeDefault ?? 'System';
+    const next = this.props.themeDefault ?? 'System';
+    if (prev !== next) this.setTheme(next.toLowerCase());
+  }
+
+  componentDidMount() {
+    let saved = null;
+    try { saved = localStorage.getItem('jygs-theme'); } catch (e) {}
+    const pref = ['light', 'dark', 'system'].includes(saved)
+      ? saved
+      : (this.props.themeDefault ?? 'System').toLowerCase();
+    this.applyTheme(pref);
+    this.setState({ theme: pref });
+    this._mq = window.matchMedia('(prefers-color-scheme: dark)');
+    this._onSys = () => { if (this.state.theme === 'system') this.applyTheme('system'); };
+    this._mq.addEventListener('change', this._onSys);
+    this.startTrendTimer();
+
+    if (!('IntersectionObserver' in window)) return;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const els = Array.from(document.querySelectorAll('[data-rise]'));
+    els.forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(16px)';
+      el.style.transition = 'opacity .8s cubic-bezier(.2,.6,.2,1), transform .8s cubic-bezier(.2,.6,.2,1)';
+    });
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'none';
+        io.unobserve(e.target);
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' });
+    els.forEach(el => io.observe(el));
+  }
+
+  renderVals() {
+    const status = this.props.dropStatus ?? 'Waitlist open';
+    const soldOut = status === 'Sold out';
+    const madeToOrder = status === 'Made to order';
+
+    const products = PRODUCTS.map(p => ({
+      ...p,
+      badge: soldOut ? 'Sold out' : p.badge,
+      frontId: 'jygs-' + p.id + '-front',
+      backId: 'jygs-' + p.id + '-back',
+      frontHint: p.name + ' — front, on figure',
+      backHint: p.name + ' — reverse or detail',
+      onEnter: () => this.setState({ hover: p.id }),
+      onLeave: () => this.setState(s => (s.hover === p.id ? { hover: null } : null)),
+      onOpen: () => this.openProduct(p.id),
+      addLabel: soldOut ? 'Sold out' : 'Add ' + p.name + ' to bag',
+      onAdd: () => {
+        if (soldOut) return;
+        const size = SIZES.find(s => !p.out.includes(s)) || 'M';
+        this.addLine(p, p.colors[0].name, size);
+      },
+      backStyle: {
+        position: 'absolute', inset: 0, opacity: this.state.hover === p.id ? 1 : 0,
+        transition: 'opacity .5s ease', pointerEvents: this.state.hover === p.id ? 'auto' : 'none'
+      },
+      quickStyle: {
+        position: 'absolute', left: '14px', right: '14px', bottom: '14px',
+        display: 'flex', gap: '8px',
+        opacity: this.state.hover === p.id ? 1 : 0,
+        transform: this.state.hover === p.id ? 'none' : 'translateY(6px)',
+        transition: 'opacity .35s ease, transform .35s ease',
+        pointerEvents: this.state.hover === p.id ? 'auto' : 'none'
+      },
+      colors: p.colors.map(c => ({ name: c.name, style: SWATCH(c.hex, false) }))
+    }));
+
+    const themeBtn = active => ({
+      display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '26px',
+      padding: 0, cursor: 'pointer', borderRadius: 'calc(var(--radius-md) - 2px)', border: 'none',
+      background: active ? 'color-mix(in srgb, var(--color-accent) 16%, transparent)' : 'transparent',
+      color: active ? 'var(--color-accent-700)' : 'color-mix(in srgb, var(--color-text) 55%, transparent)',
+      transition: 'background .25s ease, color .25s ease'
+    });
+
+    const ti = this.state.trend % TRENDING.length;
+    const shown = this.state.heroHover;
+    const arrow = (side, dir) => ({
+      position: 'absolute', top: '50%', [side]: '12px',
+      transform: 'translateY(-50%) translateX(' + (shown ? '0px' : dir * 6 + 'px') + ')',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', width: '34px', height: '34px',
+      padding: 0, cursor: 'pointer', borderRadius: '50%', background: 'var(--color-bg)',
+      border: '1px solid var(--color-divider)', color: 'var(--color-text)',
+      opacity: shown ? 1 : 0, pointerEvents: shown ? 'auto' : 'none',
+      transition: 'opacity .3s ease, transform .3s ease'
+    });
+    const trending = TRENDING.map((t, i) => ({
+      name: t.name,
+      slotId: 'jygs-' + t.id,
+      hint: t.name + ' — trending look, full length',
+      shortHint: 'Look 0' + (i + 1),
+      active: i === ti,
+      onPick: () => this.goTrend(i),
+      frameStyle: {
+        position: 'absolute', inset: 0, opacity: i === ti ? 1 : 0,
+        transition: 'opacity .75s cubic-bezier(.2,.6,.2,1)',
+        pointerEvents: i === ti ? 'auto' : 'none'
+      },
+      thumbStyle: {
+        padding: 0, cursor: 'pointer', overflow: 'hidden', aspectRatio: '3 / 4',
+        background: 'var(--color-surface)', borderRadius: '2px',
+        border: '1px solid ' + (i === ti ? 'var(--color-accent)' : 'var(--color-divider)'),
+        opacity: i === ti ? 1 : 0.62, transition: 'opacity .3s ease, border-color .3s ease'
+      }
+    }));
+
+    const bag = this.state.bag;
+    const step = this.state.step;
+    const order = this.state.order || {};
+    const count = bag.reduce((n, b) => n + b.qty, 0);
+    const total = bag.reduce((n, b) => n + b.qty * b.unit, 0);
+    const money = n => '£' + n.toLocaleString('en-GB');
+    const stepStyle = {
+      width: '28px', height: '28px', padding: 0, font: 'inherit', fontSize: '15px', lineHeight: 1,
+      background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-text)'
+    };
+
+    const pd = this.state.pdp ? PRODUCTS.find(p => p.id === this.state.pdp) : null;
+    const spec = pd ? SPECS[pd.id] : null;
+    const pdCol = pd ? pd.colors[Math.min(this.state.pdpColor, pd.colors.length - 1)] : null;
+    const pdSizeOut = pd ? (soldOut || pd.out.includes(this.state.pdpSize)) : false;
+    const madeToOrderPiece = pd ? pd.badge === 'Made to order' : false;
+    const pdStep = {
+      width: '30px', height: '30px', padding: 0, font: 'inherit', fontSize: '15px', lineHeight: 1,
+      background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-text)'
+    };
+    const mine = pd ? (this.state.myReviews[pd.id] || []) : [];
+    const allReviews = pd ? mine.concat(REVIEWS[pd.id] || []) : [];
+    const avg = allReviews.length
+      ? (allReviews.reduce((n, r) => n + r.rating, 0) / allReviews.length).toFixed(1)
+      : '—';
+    const fitCounts = allReviews.reduce((m, r) => { m[r.fit] = (m[r.fit] || 0) + 1; return m; }, {});
+    const topFit = Object.keys(fitCounts).sort((a, b) => fitCounts[b] - fitCounts[a])[0];
+    const fitVerdict = allReviews.length
+      ? Math.round((fitCounts[topFit] / allReviews.length) * 100) + '% of reviewers say it is ' +
+        (topFit === 'True to size' ? 'true to size' : topFit.toLowerCase()) + '.'
+      : '';
+    const reviewSizes = pd
+      ? (pd.badge === 'Made to order' ? ['Made to measure'] : SIZES.filter(s => !pd.out.includes(s)))
+      : [];
+    const sizeBtn = (label, out, on) => ({
+      minWidth: '46px', minHeight: '46px', padding: '0 10px', font: 'inherit', fontSize: '13.5px',
+      fontFeatureSettings: "'tnum' 1", background: 'transparent', cursor: out ? 'not-allowed' : 'pointer',
+      borderRadius: 'var(--radius-md)', color: 'var(--color-text)',
+      border: '1px solid ' + (on ? 'var(--color-accent)' : 'var(--color-divider)'),
+      boxShadow: on ? 'inset 0 0 0 1px var(--color-accent)' : 'none',
+      opacity: out ? 0.4 : 1, textDecoration: out ? 'line-through' : 'none'
+    });
+
+    const trendMeta = [
+      '312 sold · 48 left', '184 sold · cut to order', '260 sold · restocked once',
+      '96 sold · 14 left', '148 sold · 60 left'
+    ];
+    const trendingList = TRENDING.map((t, i) => {
+      const src = PRODUCTS.find(p => p.id === t.id);
+      if (!src) return null;
+      return {
+        rank: '0' + (i + 1),
+        name: src.name,
+        price: src.price,
+        cloth: src.cloth,
+        meta: soldOut ? 'Sold through' : trendMeta[i],
+        badge: soldOut ? 'Sold out' : src.badge,
+        slotId: 'jygs-' + src.id + '-front',
+        backId: 'jygs-' + src.id + '-back',
+        frontHint: src.name + ' — front, on figure',
+        backHint: src.name + ' — reverse or detail',
+        onEnter: () => this.setState({ thover: t.id }),
+        onLeave: () => this.setState(s => (s.thover === t.id ? { thover: null } : null)),
+        backStyle: {
+          position: 'absolute', inset: 0, opacity: this.state.thover === t.id ? 1 : 0,
+          transition: 'opacity .5s ease', pointerEvents: 'none'
+        },
+        quickStyle: {
+          position: 'absolute', left: '14px', right: '14px', bottom: '14px',
+          display: 'flex', gap: '8px',
+          opacity: this.state.thover === t.id ? 1 : 0,
+          transform: this.state.thover === t.id ? 'none' : 'translateY(6px)',
+          transition: 'opacity .35s ease, transform .35s ease',
+          pointerEvents: this.state.thover === t.id ? 'auto' : 'none'
+        },
+        addLabel: soldOut ? 'Sold out' : 'Add ' + src.name + ' to bag',
+        onOpen: () => this.openProduct(src.id),
+        onAdd: () => {
+          if (soldOut) return;
+          const size = src.badge === 'Made to order'
+            ? 'Made to measure'
+            : (SIZES.find(s => !src.out.includes(s)) || 'M');
+          this.addLine(src, src.colors[0].name, size);
+        }
+      };
+    }).filter(Boolean);
+
+    return {
+      products,
+      trending,
+      trendingList,
+      homeView: !pd,
+      pdpView: !!pd,
+      goHome: () => this.setState({ pdp: null }),
+      pdpName: pd ? pd.name : '',
+      pdpPrice: pd ? pd.price : '',
+      pdpNote: pd ? pd.note : '',
+      pdpBadge: pd ? (soldOut ? 'Sold out' : pd.badge) : '',
+      pdpColorName: pdCol ? pdCol.name : '',
+      pdpFitNote: spec ? spec.fitNote : '',
+      pdpDelivery: spec ? (soldOut ? 'Volume 01 has sold through — Volume 02 is cut in January.' : spec.delivery) : '',
+      pdpCare: spec ? spec.care : '',
+      pdpOrigin: spec ? spec.origin : '',
+      pdpQty: this.state.pdpQty,
+      pdpStepStyle: pdStep,
+      pdpLess: () => this.setState(s => ({ pdpQty: Math.max(1, s.pdpQty - 1) })),
+      pdpMore: () => this.setState(s => ({ pdpQty: Math.min(9, s.pdpQty + 1) })),
+      pdpLineTotal: pd ? money(this.state.pdpQty * Number(pd.price.replace(/[^0-9]/g, ''))) + ' total' : '',
+      pdpUnavailable: soldOut || pdSizeOut,
+      pdpAddLabel: soldOut ? 'Sold out' : pdSizeOut ? 'Size unavailable' : 'Add to bag',
+      pdpAdd: () => { if (pd && !soldOut && !pdSizeOut) this.addLine(pd, pdCol.name, madeToOrderPiece ? 'Made to measure' : this.state.pdpSize, this.state.pdpQty); },
+      pdpBuy: () => { if (pd && !soldOut && !pdSizeOut) this.addLine(pd, pdCol.name, madeToOrderPiece ? 'Made to measure' : this.state.pdpSize, this.state.pdpQty, true); },
+      guideOpen: this.state.guideOpen,
+      guideLabel: this.state.guideOpen ? 'Hide size guide' : 'Size guide',
+      toggleGuide: () => this.setState(s => ({ guideOpen: !s.guideOpen })),
+      fitRows: FIT_TABLE,
+      pdpShots: pd ? SHOTS.map((sh, i) => ({
+        label: sh.label,
+        slotId: 'jygs-' + pd.id + '-' + sh.key,
+        hint: pd.name + ' — ' + sh.label.toLowerCase(),
+        active: i === this.state.pdpShot,
+        onPick: () => this.setState({ pdpShot: i }),
+        frameStyle: {
+          position: 'absolute', inset: 0, opacity: i === this.state.pdpShot ? 1 : 0,
+          transition: 'opacity .5s ease', pointerEvents: i === this.state.pdpShot ? 'auto' : 'none'
+        },
+        thumbStyle: {
+          padding: 0, cursor: 'pointer', overflow: 'hidden', aspectRatio: '3 / 4',
+          background: 'var(--color-surface)', borderRadius: '2px',
+          border: '1px solid ' + (i === this.state.pdpShot ? 'var(--color-accent)' : 'var(--color-divider)'),
+          opacity: i === this.state.pdpShot ? 1 : 0.62, transition: 'opacity .3s ease, border-color .3s ease'
+        }
+      })) : [],
+      pdpColors: pd ? pd.colors.map((c, i) => ({
+        name: c.name,
+        pickStyle: { ...SWATCH(c.hex, i === Math.min(this.state.pdpColor, pd.colors.length - 1)), width: '19px', height: '19px' },
+        onPick: () => this.setState({ pdpColor: i })
+      })) : [],
+      pdpSizes: pd ? (madeToOrderPiece ? ['Made to measure'] : SIZES).map(s => {
+        const out = soldOut || (madeToOrderPiece ? false : pd.out.includes(s));
+        const on = madeToOrderPiece ? !out : s === this.state.pdpSize && !out;
+        return {
+          label: s, out,
+          onPick: () => { if (!out && !madeToOrderPiece) this.setState({ pdpSize: s }); },
+          style: sizeBtn(s, out, on)
+        };
+      }) : [],
+      pdpSpec: spec ? [
+        { k: 'Cloth', v: pd.cloth },
+        { k: 'Mill', v: spec.mill },
+        { k: 'Weight', v: spec.weight },
+        { k: 'Fit', v: spec.fit },
+        { k: 'Finishing', v: spec.finishing },
+        { k: 'Run', v: soldOut ? 'Sold through' : '400 pieces, then the pattern retires' }
+      ] : [],
+      avgRating: avg,
+      reviewCountLabel: allReviews.length === 1 ? 'from 1 review' : 'from ' + allReviews.length + ' reviews',
+      ratingBars: [5, 4, 3, 2, 1].map(n => {
+        const c = allReviews.filter(r => r.rating === n).length;
+        return {
+          label: n + ' star', count: c,
+          barStyle: {
+            display: 'block', height: '100%',
+            width: allReviews.length ? Math.round((c / allReviews.length) * 100) + '%' : '0%',
+            background: 'var(--color-accent)'
+          }
+        };
+      }),
+      fitVerdict: fitVerdict,
+      reviews: allReviews.map(r => ({
+        title: r.title, body: r.body, date: r.date,
+        stars: '★★★★★'.slice(0, r.rating) + '☆☆☆☆☆'.slice(0, 5 - r.rating),
+        starsLabel: r.rating + ' out of 5',
+        meta: r.name + ' · Size ' + r.size + ' · ' + r.fit
+      })),
+      reviewFormOpen: !this.state.reviewSent,
+      reviewThanks: this.state.reviewSent,
+      writeAnother: () => this.setState({ reviewSent: false, reviewRating: 5 }),
+      ratingPicks: [1, 2, 3, 4, 5].map(n => ({
+        label: n + ' star' + (n > 1 ? 's' : ''),
+        on: n === this.state.reviewRating,
+        onPick: () => this.setState({ reviewRating: n }),
+        style: {
+          width: '34px', height: '34px', padding: 0, cursor: 'pointer', font: 'inherit', fontSize: '16px',
+          lineHeight: 1, borderRadius: 'var(--radius-md)', background: 'transparent',
+          border: '1px solid ' + (n <= this.state.reviewRating ? 'var(--color-accent)' : 'var(--color-divider)'),
+          color: n <= this.state.reviewRating ? 'var(--color-accent-700)' : 'color-mix(in srgb, var(--color-text) 30%, transparent)'
+        }
+      })),
+      reviewSizeOptions: reviewSizes.map(s => ({ value: s, label: s })),
+      reviewSizeDefault: reviewSizes.includes('M') ? 'M' : reviewSizes[0],
+      onReviewSubmit: e => {
+        e.preventDefault();
+        const f = new FormData(e.target);
+        const entry = {
+          rating: this.state.reviewRating,
+          title: f.get('title'),
+          name: f.get('name'),
+          size: f.get('size'),
+          fit: f.get('fit'),
+          body: f.get('body'),
+          date: 'Just now'
+        };
+        this.setState(s => ({
+          reviewSent: true,
+          myReviews: { ...s.myReviews, [pd.id]: [entry].concat(s.myReviews[pd.id] || []) }
+        }));
+      },
+      cart: count,
+      hasBag: count > 0,
+      bagOpen: this.state.bagOpen,
+      bagTotal: money(total),
+      bagCountLabel: count === 1 ? '1 piece' : count + ' pieces',
+      openBag: () => this.setState({ bagOpen: true, step: this.state.step === 3 ? 0 : this.state.step }),
+      toast: this.state.toast,
+      hasToast: !!this.state.toast,
+      viewBagFromToast: () => this.setState({ bagOpen: true, step: 0, toast: null }),
+      closeBag: () => this.setState({ bagOpen: false }),
+
+      panelTitle: step === 0 ? 'Your bag' : step === 1 ? 'Details' : step === 2 ? 'Payment' : 'Thank you',
+      inCheckout: step > 0 && step < 3,
+      bagView: step === 0 && count > 0,
+      emptyView: step === 0 && count === 0,
+      detailsView: step === 1,
+      paymentView: step === 2,
+      doneView: step === 3,
+      steps: [
+        { num: '01', label: 'Details' },
+        { num: '02', label: 'Payment' },
+        { num: '03', label: 'Done' }
+      ].map((s, i) => {
+        const on = i + 1 === step;
+        const past = i + 1 < step;
+        return { ...s, style: {
+          flex: 1, display: 'flex', alignItems: 'center', gap: '7px', padding: '7px 9px',
+          fontSize: '11px', letterSpacing: '0.09em', textTransform: 'uppercase',
+          borderTop: '1px solid ' + (on || past ? 'var(--color-accent)' : 'var(--color-divider)'),
+          color: on ? 'var(--color-accent-700)'
+            : past ? 'color-mix(in srgb, var(--color-text) 60%, transparent)'
+            : 'color-mix(in srgb, var(--color-text) 38%, transparent)'
+        } };
+      }),
+      startCheckout: () => this.setState({ step: 1 }),
+      backToBag: () => this.setState({ step: 0 }),
+      onEditDetails: e => { if (e) e.preventDefault(); this.setState({ step: 1 }); },
+      onDetails: e => {
+        e.preventDefault();
+        const f = new FormData(e.target);
+        this.setState({
+          step: 2,
+          order: {
+            email: f.get('email'),
+            shipTo: [f.get('name'), f.get('city'), f.get('post')].filter(Boolean).join(', ')
+          }
+        });
+      },
+      paying: this.state.paying,
+      payLabel: this.state.paying ? 'Taking payment…' : 'Pay ' + money(total),
+      onPay: e => {
+        e.preventDefault();
+        if (this.state.paying) return;
+        this.setState({ paying: true });
+        setTimeout(() => this.setState(s => ({
+          paying: false, step: 3,
+          order: { ...s.order, no: 'JY-' + String(4820 + s.bag.length * 7), paid: money(total), count }
+        })), 900);
+      },
+      finishOrder: () => this.setState({ bagOpen: false, step: 0, bag: [], order: null }),
+      orderNo: order.no || '',
+      orderEmail: order.email || 'your inbox',
+      paidTotal: order.paid || money(total),
+      shipTo: order.shipTo || '—',
+      orderSummary: (order.count || count) === 1 ? 'One piece from Volume 01' : (order.count || count) + ' pieces from Volume 01',
+      orderShipNote: bag.some(b => PRODUCTS.some(p => p.id === b.pid && p.badge === 'Made to order'))
+        ? (bag.every(b => PRODUCTS.some(p => p.id === b.pid && p.badge === 'Made to order'))
+            ? 'Cut to your measurements and posted in six weeks'
+            : 'In-stock pieces post within two working days; made-to-order follows in six weeks')
+        : 'We cut, press and post within two working days',
+      bagItems: bag.map((b, i) => ({
+        ...b,
+        slotId: 'jygs-' + b.pid + '-front',
+        variant: b.color + ' · Size ' + b.size,
+        line: money(b.qty * b.unit),
+        summaryLabel: b.name + ' — ' + b.size + ' × ' + b.qty,
+        fixedSize: PRODUCTS.some(p => p.id === b.pid && p.badge === 'Made to order'),
+        editableSize: !PRODUCTS.some(p => p.id === b.pid && p.badge === 'Made to order'),
+        sizeOptions: SIZES.map(s => {
+          const src = PRODUCTS.find(p => p.id === b.pid);
+          return { value: s, label: s, disabled: soldOut || (src ? src.out.includes(s) : false) };
+        }),
+        onSize: e => this.changeLineSize(i, e.target.value),
+        stepStyle,
+        onLess: () => this.setState(s => ({
+          bag: b.qty > 1
+            ? s.bag.map((x, j) => (j === i ? { ...x, qty: x.qty - 1 } : x))
+            : s.bag.filter((x, j) => j !== i)
+        })),
+        onMore: () => this.setState(s => ({
+          bag: s.bag.map((x, j) => (j === i ? { ...x, qty: x.qty + 1 } : x))
+        })),
+        onRemove: () => this.setState(s => ({ bag: s.bag.filter((x, j) => j !== i) }))
+      })),
+      trendName: TRENDING[ti].name,
+      trendMeta: TRENDING[ti].meta,
+      arrowLeft: arrow('left', -1),
+      arrowRight: arrow('right', 1),
+      onHeroEnter: () => this.setState({ heroHover: true }),
+      onHeroLeave: () => this.setState({ heroHover: false }),
+      prevTrend: () => this.goTrend(ti - 1),
+      nextTrend: () => this.goTrend(ti + 1),
+      isLight: this.state.theme === 'light',
+      isDark: this.state.theme === 'dark',
+      isSystem: this.state.theme === 'system',
+      lightStyle: themeBtn(this.state.theme === 'light'),
+      darkStyle: themeBtn(this.state.theme === 'dark'),
+      systemStyle: themeBtn(this.state.theme === 'system'),
+      setLight: () => this.setTheme('light'),
+      setDark: () => this.setTheme('dark'),
+      setSystem: () => this.setTheme('system'),
+      marquee: this.props.showMarquee ?? true,
+      heroSplit: (this.props.heroTreatment ?? 'Split with plate') === 'Split with plate',
+      heroType: (this.props.heroTreatment ?? 'Split with plate') !== 'Split with plate',
+      ctaLabel: soldOut ? 'Notify me of Volume 02' : madeToOrder ? 'Book a fitting' : 'Join the waitlist',
+      statusNote: soldOut ? 'Volume 01 sold through — Volume 02 cut in January'
+        : madeToOrder ? 'Made to order — six weeks from your measurements'
+        : 'Waitlist open · 400 pieces · ships 12 September',
+      closeTitle: soldOut ? 'Volume 01 is gone. Volume 02 is on the bench.'
+        : madeToOrder ? 'Bring us your measurements.'
+        : 'Be first when Volume 01 opens.',
+      closeCopy: soldOut
+        ? 'We do not re-cut a sold-through pattern. Leave your address and you will hear about Volume 02 before it is photographed.'
+        : madeToOrder
+        ? 'Fittings happen at the atelier on Thursdays, or by post with a tape measure and ten minutes. Six weeks later it arrives finished.'
+        : 'The waitlist gets the size run twenty-four hours early, and a note on what the cloth does after a year of wearing. Nothing else.',
+      notJoined: !this.state.joined,
+      joined: this.state.joined,
+      onJoin: e => { e.preventDefault(); this.setState({ joined: true }); },
+
+      stop: e => e.stopPropagation()
+    };
+  }
+}
+</script>
+</body>
+</html>
