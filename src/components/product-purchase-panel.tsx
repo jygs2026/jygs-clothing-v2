@@ -67,7 +67,7 @@ export function ProductPurchasePanel({
           {product.price}
         </span>
         <span className="text-[11.5px] tracking-[0.09em] text-foreground/52 uppercase">
-          Free UK shipping · Duties included
+          Free shipping across India · Duties included
         </span>
       </p>
       <p className="mt-4.5 text-[15px] leading-[27px] text-foreground/76">

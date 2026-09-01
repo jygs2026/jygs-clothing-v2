@@ -12,10 +12,10 @@ import {
   TableCell,
   TableRow,
 } from "@/components/ui/table";
-import { PRODUCTS, REVIEWS, SPECS, getProduct } from "@/lib/data";
+import { ALL_PRODUCTS, DEFAULT_SPEC, REVIEWS, SPECS, getProduct } from "@/lib/data";
 
 export function generateStaticParams() {
-  return PRODUCTS.map((p) => ({ slug: p.id }));
+  return ALL_PRODUCTS.map((p) => ({ slug: p.id }));
 }
 
 export async function generateMetadata({
@@ -41,7 +41,7 @@ export default async function ProductPage({
   const product = getProduct(slug);
   if (!product) notFound();
 
-  const spec = SPECS[product.id];
+  const spec = SPECS[product.id] ?? DEFAULT_SPEC;
   const reviews = REVIEWS[product.id] ?? [];
 
   return (
@@ -58,7 +58,7 @@ export default async function ProductPage({
       </nav>
 
       <section className="grid grid-cols-1 items-start gap-9 pb-16 min-[860px]:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] min-[860px]:gap-x-18">
-        <ProductGallery productName={product.name} />
+        <ProductGallery productName={product.name} image={product.image} />
         <ProductPurchasePanel product={product} spec={spec} />
       </section>
 

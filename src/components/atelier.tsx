@@ -17,7 +17,7 @@ export function Atelier() {
   return (
     <section
       id="atelier"
-      className="grid grid-cols-1 gap-8 py-16 sm:grid-cols-3 sm:gap-x-14"
+      className="grid scroll-mt-[120px] grid-cols-1 gap-8 py-16 sm:grid-cols-3 sm:gap-x-14"
     >
       {PILLARS.map((pillar) => (
         <div key={pillar.title}>

@@ -19,6 +19,7 @@ const LINKS = [
   { label: "Collection", href: "/#collection" },
   { label: "Trending", href: "/#trending" },
   { label: "Atelier", href: "/#atelier" },
+  { label: "Contact", href: "/#contact" },
 ];
 
 const THEME_OPTIONS = [

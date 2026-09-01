@@ -45,6 +45,12 @@ export function SiteHeader() {
           >
             Atelier
           </Link>
+          <Link
+            href="/#contact"
+            className="text-sm hover:text-accent-2 transition-colors"
+          >
+            Contact
+          </Link>
         </div>
         <button
           type="button"

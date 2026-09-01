@@ -22,6 +22,8 @@ export type Product = {
   note: string;
   colors: ProductColor[];
   out: Size[];
+  /** Temporary remote photo — falls back to the illustrated placeholder when unset or unreachable. */
+  image?: string;
 };
 
 export type ProductSpec = {

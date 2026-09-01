@@ -10,7 +10,7 @@ export function WaitlistSection() {
   const [joined, setJoined] = useState(false);
 
   return (
-    <section id="waitlist" className="py-16">
+    <section id="waitlist" className="scroll-mt-[120px] py-16">
       <h2 className="max-w-[26ch] ml-[-0.042em] font-heading text-4xl font-normal leading-[1.1] tracking-[-0.01em] sm:text-5xl">
         Be first when Volume 01 opens.
       </h2>

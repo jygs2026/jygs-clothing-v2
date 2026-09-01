@@ -1,6 +1,10 @@
+"use client";
+
 import Image from "next/image";
 import { Shirt } from "lucide-react";
+import { useState } from "react";
 
+import { useSlowConnection } from "@/hooks/use-slow-connection";
 import { cn } from "@/lib/utils";
 
 export function ProductImage({
@@ -16,16 +20,47 @@ export function ProductImage({
   className?: string;
   priority?: boolean;
 }) {
-  if (src) {
+  const [failed, setFailed] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  const slow = useSlowConnection();
+  // Never eagerly preload above a slow/data-saver connection, even for
+  // callers that ask for it (e.g. the first gallery shot) — let it queue
+  // behind whatever the page actually needs first.
+  const eager = priority && !slow;
+  // Quality only varies for images that were already lazy on the server
+  // render (their `slow` value is settled before the browser ever fetches
+  // them). A `priority` image starts an eager fetch straight from the
+  // server-rendered HTML, before this hook can know the connection is
+  // slow — varying its quality here would just trigger a wasted second
+  // fetch once React corrects it, so it stays at the default.
+  const quality = !priority && slow ? 40 : 75;
+
+  if (src && !failed) {
     return (
-      <Image
-        src={src}
-        alt={alt}
-        fill
-        priority={priority}
-        sizes="(min-width: 1240px) 620px, (min-width: 620px) 50vw, 100vw"
-        className={cn("plate object-cover", className)}
-      />
+      <>
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          preload={eager}
+          loading={eager ? "eager" : "lazy"}
+          quality={quality}
+          sizes="(min-width: 1240px) 620px, (min-width: 620px) 50vw, 100vw"
+          className={cn(
+            "plate object-cover transition-opacity duration-700",
+            loaded ? "opacity-100" : "opacity-0",
+            className
+          )}
+          onLoad={() => setLoaded(true)}
+          onError={() => setFailed(true)}
+        />
+        {!loaded && (
+          <div
+            aria-hidden="true"
+            className={cn("plate skeleton-shimmer absolute inset-0", className)}
+          />
+        )}
+      </>
     );
   }
 

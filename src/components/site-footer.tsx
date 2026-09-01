@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { SOCIAL_LINKS } from "@/components/social-icons";
+
 const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
   {
     title: "Shop",
@@ -25,12 +27,14 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
       { label: "Size & fit", href: "/#waitlist" },
       { label: "Shipping", href: "/#waitlist" },
       { label: "Returns", href: "/#waitlist" },
-      { label: "Contact", href: "/#waitlist" },
+      { label: "Contact", href: "/#contact" },
     ],
   },
 ];
 
 export function SiteFooter() {
+  const year = new Date().getFullYear();
+
   return (
     <footer className="border-t border-border">
       <div className="mx-auto grid max-w-[1240px] grid-cols-2 gap-8 px-5 py-14 text-[13.5px] leading-[26px] sm:px-6 md:grid-cols-[minmax(0,2fr)_repeat(3,minmax(130px,1fr))] md:gap-14">
@@ -42,6 +46,20 @@ export function SiteFooter() {
             Short-run clothing. Two volumes a year, mended for as long as you
             own them.
           </p>
+          <div className="mt-5 flex items-center gap-3.5">
+            {SOCIAL_LINKS.map(({ label, href, icon: Icon }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noreferrer noopener"
+                aria-label={label}
+                className="flex size-8 items-center justify-center rounded-full border border-border text-foreground/60 transition-colors hover:border-accent hover:text-accent-2"
+              >
+                <Icon className="size-[16px]" />
+              </a>
+            ))}
+          </div>
         </div>
         {COLUMNS.map((col) => (
           <div key={col.title} className="flex flex-col gap-1.5">
@@ -59,6 +77,12 @@ export function SiteFooter() {
             ))}
           </div>
         ))}
+      </div>
+
+      <div className="border-t border-border">
+        <div className="mx-auto max-w-[1240px] px-5 py-5 text-xs tracking-[0.04em] text-foreground/52 sm:px-6">
+          © {year} JYGS. All rights reserved.
+        </div>
       </div>
     </footer>
   );

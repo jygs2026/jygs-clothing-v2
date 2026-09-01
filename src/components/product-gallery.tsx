@@ -6,7 +6,13 @@ import { ProductImage } from "@/components/product-image";
 import { SHOTS } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
-export function ProductGallery({ productName }: { productName: string }) {
+export function ProductGallery({
+  productName,
+  image,
+}: {
+  productName: string;
+  image?: string;
+}) {
   const [active, setActive] = useState(0);
 
   return (
@@ -22,6 +28,8 @@ export function ProductGallery({ productName }: { productName: string }) {
             }}
           >
             <ProductImage
+              src={image}
+              priority={i === 0}
               alt={`${productName} — ${shot.label.toLowerCase()}`}
               hint={`${productName} — ${shot.label.toLowerCase()}`}
             />
@@ -42,7 +50,7 @@ export function ProductGallery({ productName }: { productName: string }) {
               i === active ? "border-accent opacity-100" : "border-border opacity-60"
             )}
           >
-            <ProductImage alt={shot.label} hint={shot.label} className="pointer-events-none" />
+            <ProductImage src={image} alt={shot.label} hint={shot.label} className="pointer-events-none" />
           </button>
         ))}
       </div>

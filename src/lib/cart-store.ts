@@ -3,7 +3,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-import { PRODUCTS, priceToNumber } from "@/lib/data";
+import { ALL_PRODUCTS, priceToNumber } from "@/lib/data";
 import type { BagLine, CheckoutStep, Order, Product } from "@/lib/types";
 
 type CartState = {
@@ -167,6 +167,7 @@ export const useCartStore = create<CartState>()(
         set((state) => ({
           paying: false,
           step: "done",
+          bag: [],
           order: state.order
             ? {
                 ...state.order,
@@ -189,9 +190,9 @@ export const useCartStore = create<CartState>()(
 
 function formatTotal(bag: BagLine[]) {
   const total = bag.reduce((n, b) => n + b.qty * b.unit, 0);
-  return "£" + total.toLocaleString("en-GB");
+  return "₹" + total.toLocaleString("en-IN");
 }
 
 export function productForLine(productId: string): Product | undefined {
-  return PRODUCTS.find((p) => p.id === productId);
+  return ALL_PRODUCTS.find((p) => p.id === productId);
 }

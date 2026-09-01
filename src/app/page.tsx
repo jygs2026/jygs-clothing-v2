@@ -1,9 +1,10 @@
 import { Atelier } from "@/components/atelier";
+import { ContactSection } from "@/components/contact-section";
 import { Hero } from "@/components/hero";
 import { ProductCard } from "@/components/product-card";
 import { Reveal } from "@/components/reveal";
 import { WaitlistSection } from "@/components/waitlist-section";
-import { PRODUCTS, TRENDING, TRENDING_META, getProduct } from "@/lib/data";
+import { PREMIUM_COLLECTION, TRENDING_COLLECTION } from "@/lib/data";
 
 export default function Home() {
   return (
@@ -13,7 +14,7 @@ export default function Home() {
       <hr className="border-border" />
 
       <Reveal className="py-14 pb-6">
-        <section id="collection">
+        <section id="collection" className="scroll-mt-[120px]">
           <div className="flex flex-wrap items-baseline justify-between gap-6">
             <div>
               <span className="mb-3.5 block text-[13px] tracking-[0.08em] text-accent-2 uppercase font-feature-tnum">
@@ -32,17 +33,17 @@ export default function Home() {
       </Reveal>
 
       <Reveal>
-        <section className="grid grid-cols-[repeat(auto-fit,minmax(230px,1fr))] gap-x-7 gap-y-11 pb-18">
-          {PRODUCTS.map((product) => (
+        <div className="grid grid-cols-1 gap-x-6 gap-y-12 pb-18 sm:grid-cols-3 lg:grid-cols-4">
+          {PREMIUM_COLLECTION.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
-        </section>
+        </div>
       </Reveal>
 
       <hr className="border-border" />
 
       <Reveal className="pt-18 pb-7.5">
-        <section id="trending">
+        <section id="trending" className="scroll-mt-[120px]">
           <div className="flex flex-wrap items-baseline justify-between gap-6">
             <div>
               <span className="mb-3.5 block text-[13px] tracking-[0.08em] text-accent-2 uppercase font-feature-tnum">
@@ -62,20 +63,16 @@ export default function Home() {
       </Reveal>
 
       <Reveal>
-        <section className="grid grid-cols-[repeat(auto-fit,minmax(230px,1fr))] gap-x-7 gap-y-11 pb-20">
-          {TRENDING.map((t, i) => {
-            const product = getProduct(t.id);
-            if (!product) return null;
-            return (
-              <ProductCard
-                key={t.id}
-                product={product}
-                rank={"0" + (i + 1)}
-                meta={TRENDING_META[i]}
-              />
-            );
-          })}
-        </section>
+        <div className="grid grid-cols-1 gap-x-6 gap-y-12 pb-20 sm:grid-cols-3 lg:grid-cols-4">
+          {TRENDING_COLLECTION.map(({ product, meta }, i) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              rank={String(i + 1).padStart(2, "0")}
+              meta={meta}
+            />
+          ))}
+        </div>
       </Reveal>
 
       <hr className="border-border" />
@@ -88,6 +85,12 @@ export default function Home() {
 
       <Reveal>
         <WaitlistSection />
+      </Reveal>
+
+      <hr className="border-border" />
+
+      <Reveal>
+        <ContactSection />
       </Reveal>
     </div>
   );

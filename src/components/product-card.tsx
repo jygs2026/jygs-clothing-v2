@@ -50,6 +50,7 @@ export function ProductCard({
           className="relative block aspect-3/4 w-full cursor-pointer overflow-hidden"
         >
           <ProductImage
+            src={product.image}
             alt={`${product.name} — front, on figure`}
             hint={`${product.name} — front, on figure`}
           />
@@ -58,6 +59,7 @@ export function ProductCard({
             style={{ opacity: hovered ? 1 : 0, pointerEvents: hovered ? "auto" : "none" }}
           >
             <ProductImage
+              src={product.image}
               alt={`${product.name} — reverse or detail`}
               hint={`${product.name} — reverse or detail`}
             />

@@ -167,6 +167,30 @@
   .font-feature-tnum {
     font-feature-settings: "tnum" 1;
   }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .skeleton-shimmer {
+    background: linear-gradient(
+      100deg,
+      var(--card) 40%,
+      color-mix(in srgb, var(--card) 40%, var(--background)) 50%,
+      var(--card) 60%
+    );
+    background-size: 250% 100%;
+    animation: jygs-shimmer 1.6s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .skeleton-shimmer {
+      animation: none;
+    }
+  }
 }
 
 @keyframes jygs-marquee {
@@ -175,5 +199,14 @@
   }
   to {
     transform: translateX(-50%);
+  }
+}
+
+@keyframes jygs-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -50% 0;
   }
 }
