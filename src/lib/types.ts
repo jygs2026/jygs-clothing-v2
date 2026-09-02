@@ -6,7 +6,8 @@ export type ProductBadge =
   | "Volume 01"
   | "Restocked"
   | "Made to order"
-  | "Few left";
+  | "Few left"
+  | "Customizable";
 
 export type ProductColor = {
   name: string;
@@ -52,6 +53,26 @@ export type FitRow = {
   chest: string;
   waist: string;
   length: string;
+};
+
+/** The three kinds of piece the studio will personalise. */
+export type CustomFamily = "Couples" | "Friends" | "Quotes";
+
+export type CustomTee = {
+  /** A real product — it can go in the bag and through checkout as-is. */
+  product: Product;
+  family: CustomFamily;
+  /** What can be changed on this piece when someone asks. */
+  pitch: string;
+  lead: string;
+  alt: string;
+};
+
+export type HeroSlide = {
+  id: string;
+  /** Wide editorial photograph, full-bleed behind the headline. */
+  image: string;
+  alt: string;
 };
 
 export type TrendingEntry = {

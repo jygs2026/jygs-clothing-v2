@@ -15,10 +15,10 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
   {
     title: "Atelier",
     links: [
+      { label: "Customize yours", href: "/#customize" },
       { label: "Made to order", href: "/#atelier" },
       { label: "Mill notes", href: "/#atelier" },
       { label: "Repairs", href: "/#atelier" },
-      { label: "Trending", href: "/#trending" },
     ],
   },
   {

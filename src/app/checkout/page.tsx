@@ -9,6 +9,7 @@ import { ProductImage } from "@/components/product-image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useOpenBag } from "@/hooks/use-open-bag";
 import { productForLine, useCartStore } from "@/lib/cart-store";
 import { formatMoney } from "@/lib/data";
 import { cn } from "@/lib/utils";
@@ -53,9 +54,9 @@ export default function CheckoutPage() {
 }
 
 function BackToBag() {
-  const router = useRouter();
   const backToBag = useCartStore((s) => s.backToBag);
-  const openBag = useCartStore((s) => s.openBag);
+  // Desktop reopens the sheet over the home page; mobile goes to /bag.
+  const openBag = useOpenBag("/");
 
   return (
     <button
@@ -63,7 +64,6 @@ function BackToBag() {
       onClick={() => {
         backToBag();
         openBag();
-        router.push("/");
       }}
       className="inline-flex items-center gap-1.5 text-xs tracking-[0.09em] text-foreground/55 uppercase transition-colors hover:text-accent-2"
     >
@@ -270,7 +270,11 @@ function OrderSummary() {
           return (
             <div key={line.key} className="flex gap-3.5">
               <div className="relative aspect-3/4 w-14 shrink-0 overflow-hidden">
-                <ProductImage alt={line.name} hint={line.name} />
+                <ProductImage
+                  src={product?.image}
+                  alt={`${line.name} — ${line.color}`}
+                  hint={line.name}
+                />
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-baseline justify-between gap-3">

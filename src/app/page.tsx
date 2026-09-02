@@ -1,4 +1,5 @@
 import { Atelier } from "@/components/atelier";
+import { Customize } from "@/components/customize";
 import { ContactSection } from "@/components/contact-section";
 import { Hero } from "@/components/hero";
 import { ProductCard } from "@/components/product-card";
@@ -73,6 +74,12 @@ export default function Home() {
             />
           ))}
         </div>
+      </Reveal>
+
+      <hr className="border-border" />
+
+      <Reveal>
+        <Customize />
       </Reveal>
 
       <hr className="border-border" />

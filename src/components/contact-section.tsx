@@ -15,10 +15,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { whatsappLink } from "@/lib/data";
 
 const TOPICS = [
   "General enquiry",
   "Order & shipping",
+  "Customization & printing",
   "Made to order / fittings",
   "Repairs & care",
   "Press & wholesale",
@@ -35,7 +37,7 @@ const DETAILS = [
     icon: Phone,
     label: "WhatsApp",
     value: "+91 12345 67890",
-    href: "https://wa.me/911234567890",
+    href: whatsappLink("Hello JYGS — I have a question."),
   },
   {
     icon: MapPin,
@@ -46,8 +48,8 @@ const DETAILS = [
 ];
 
 export function ContactSection() {
-  const [sent, setSent] = useState(false);
   const [name, setName] = useState("");
+  const [sent, setSent] = useState(false);
 
   return (
     <section
@@ -62,8 +64,9 @@ export function ContactSection() {
           Talk to the studio
         </h2>
         <p className="mt-4 max-w-[52ch] text-[15px] leading-[26px] text-foreground/72">
-          Questions about fit, an order, a repair or wholesale — write in and
-          a person on the small team answers, usually within a working day.
+          Questions about fit, an order, a repair, a commission or wholesale
+          — write in and a person on the small team answers, usually within a
+          working day.
         </p>
 
         {!sent ? (
@@ -117,7 +120,13 @@ export function ContactSection() {
               <Label htmlFor="ct-message" className="mb-1.5 text-xs text-foreground/70">
                 Message
               </Label>
-              <Textarea id="ct-message" name="message" rows={5} required placeholder="How can we help?" />
+              <Textarea
+                id="ct-message"
+                name="message"
+                rows={5}
+                required
+                placeholder="How can we help?"
+              />
             </div>
             <Button
               type="submit"

@@ -7,6 +7,7 @@ import { toast } from "sonner";
 
 import { ProductImage } from "@/components/product-image";
 import { Button } from "@/components/ui/button";
+import { useOpenBag } from "@/hooks/use-open-bag";
 import { useCartStore } from "@/lib/cart-store";
 import { SIZES } from "@/lib/types";
 import type { Product } from "@/lib/types";
@@ -21,7 +22,7 @@ export function ProductCard({
   meta?: string;
 }) {
   const [hovered, setHovered] = useState(false);
-  const openBag = useCartStore((s) => s.openBag);
+  const openBag = useOpenBag();
   const addLine = useCartStore((s) => s.addLine);
 
   const href = `/product/${product.id}`;
@@ -40,7 +41,7 @@ export function ProductCard({
 
   return (
     <article
-      className="flex flex-col"
+      className="flex h-full flex-col"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -69,67 +70,53 @@ export function ProductCard({
         <span className="absolute top-3.5 left-3.5 z-10 inline-flex items-center rounded-[3px] border border-accent bg-background px-2.5 py-[3px] text-[10px] tracking-[0.1em] text-accent uppercase">
           {rank ? `${rank} · ${product.badge}` : product.badge}
         </span>
-
-        <div
-          className="absolute right-3.5 bottom-3.5 left-3.5 z-10 flex gap-2 transition-all duration-300"
-          style={{
-            opacity: hovered ? 1 : 0,
-            transform: hovered ? "none" : "translateY(6px)",
-            pointerEvents: hovered ? "auto" : "none",
-          }}
-        >
-          <Button
-            render={<Link href={href} />}
-            nativeButton={false}
-            variant="secondary"
-            className="min-h-[34px] flex-1 border border-border bg-background text-[12px] tracking-[0.06em] uppercase"
-          >
-            Details
-          </Button>
-          <Button
-            type="button"
-            variant="secondary"
-            size="icon"
-            aria-label={`Add ${product.name} to bag`}
-            title={`Add ${product.name} to bag`}
-            onClick={handleAdd}
-            className="min-h-[34px] w-[34px] flex-none border border-border bg-background"
-          >
-            <ShoppingBag className="size-4" strokeWidth={1.4} />
-          </Button>
-        </div>
       </div>
 
-      <div className="mt-4 flex items-baseline justify-between gap-3">
-        <Link href={href}>
-          <h3 className="font-heading text-[21px] leading-[1.2] tracking-[-0.004em] cursor-pointer">
+      {/* Name, price and cloth are one target — the whole block opens the
+          piece, not just the words in the title. */}
+      <Link href={href} className="group mt-4 block cursor-pointer">
+        <div className="flex items-baseline justify-between gap-3">
+          <h3 className="font-heading text-[21px] leading-[1.2] tracking-[-0.004em] transition-colors group-hover:text-accent-2">
             {product.name}
           </h3>
-        </Link>
-        <span className="text-sm text-foreground/78 font-feature-tnum">
-          {product.price}
-        </span>
-      </div>
-      <p className="mt-2 text-[13.5px] leading-6 text-foreground/66">
-        {product.cloth}
-      </p>
-
-      {meta ? (
-        <p className="mt-3 text-[11px] tracking-[0.09em] text-foreground/48 uppercase font-feature-tnum">
-          {meta}
-        </p>
-      ) : (
-        <div className="mt-3.5 flex gap-2">
-          {product.colors.map((color) => (
-            <span
-              key={color.name}
-              title={color.name}
-              className="block size-[15px] rounded-full border border-foreground/30 box-border"
-              style={{ background: color.hex }}
-            />
-          ))}
+          <span className="text-sm text-foreground/78 font-feature-tnum">
+            {product.price}
+          </span>
         </div>
-      )}
+        <p className="mt-2 text-[13.5px] leading-6 text-foreground/66">
+          {product.cloth}
+        </p>
+      </Link>
+
+      <div className="mt-auto flex items-center justify-between gap-4 pt-2">
+        {meta ? (
+          <p className="text-[11px] tracking-[0.09em] text-foreground/48 uppercase font-feature-tnum">
+            {meta}
+          </p>
+        ) : (
+          <div className="flex gap-2">
+            {product.colors.map((color) => (
+              <span
+                key={color.name}
+                title={color.name}
+                className="block size-[15px] rounded-full border border-foreground/30 box-border"
+                style={{ background: color.hex }}
+              />
+            ))}
+          </div>
+        )}
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          aria-label={`Add ${product.name} to bag`}
+          title={`Add ${product.name} to bag`}
+          onClick={handleAdd}
+          className="size-9 shrink-0 rounded-[3px] border-border bg-background text-foreground/70 transition-colors hover:border-accent hover:bg-accent/10 hover:text-accent"
+        >
+          <ShoppingBag className="size-4" strokeWidth={1.4} />
+        </Button>
+      </div>
     </article>
   );
 }

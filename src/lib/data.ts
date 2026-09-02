@@ -1,5 +1,8 @@
 import type {
+  CustomFamily,
+  CustomTee,
   FitRow,
+  HeroSlide,
   Product,
   ProductSpec,
   Review,
@@ -742,11 +745,171 @@ export const TRENDING_META = [
   "148 sold · 60 left",
 ];
 
+/** Where "Customize" and "Tell us your idea" send people. Digits only, no +. */
+export const STUDIO_WHATSAPP = "911234567890";
+
+export function whatsappLink(message: string) {
+  return `https://wa.me/${STUDIO_WHATSAPP}?text=${encodeURIComponent(message)}`;
+}
+
+export const CUSTOM_FAMILIES: {
+  key: CustomFamily;
+  label: string;
+  note: string;
+}[] = [
+  {
+    key: "Couples",
+    label: "Couples",
+    note: "Two shirts that answer each other — names, dates, King and Queen.",
+  },
+  {
+    key: "Friends",
+    label: "Friends",
+    note: "One print across the whole group, in a single dye lot.",
+  },
+  {
+    key: "Quotes",
+    label: "Quotes",
+    note: "Your line, set in our type and screened by hand.",
+  },
+];
+
+/**
+ * Customizable tees. These are ordinary products — they go in the bag and
+ * through checkout like anything else — with a note on what can be changed
+ * for anyone who would rather talk it through first.
+ */
+export const CUSTOM_TEES: CustomTee[] = [
+  {
+    family: "Couples",
+    product: {
+      id: "king-queen-set",
+      name: "King & Queen Set",
+      price: "₹9,800",
+      badge: "Customizable",
+      cloth: "Combed cotton jersey, 220gsm — two shirts, one print run.",
+      note: "The pair everyone asks for, done properly: King on one, Queen on the other, screened in the same ink so they photograph as a set. Swap the words for your own — names, a date, whatever the two of you actually call each other.",
+      colors: [
+        { name: "Ink", hex: "#23211f" },
+        { name: "Bone", hex: "#e6e0d5" },
+      ],
+      out: [],
+      image: unsplash("1779040622219-7b910616cf52"),
+    },
+    pitch: "Change the wording, the type or the ink colour on either shirt.",
+    lead: "Ten days",
+    alt: "Two people standing together in matching black graphic-print tees",
+  },
+  {
+    family: "Couples",
+    product: {
+      id: "his-hers-blanks",
+      name: "His & Hers Blanks",
+      price: "₹7,600",
+      badge: "Customizable",
+      cloth: "Combed cotton jersey, 220gsm — two shirts, cut to two blocks.",
+      note: "A pair of plain tees cut on our men's and women's blocks, dyed in one lot so they stay the same white through a hundred washes. Take them blank, or send us the line and we print it small on the chest.",
+      colors: [
+        { name: "Chalk", hex: "#f0ece4" },
+        { name: "Ash", hex: "#9a9691" },
+      ],
+      out: [],
+      image: unsplash("1758523672869-73fe82e25585"),
+    },
+    pitch: "Add a small chest print, initials or an inside-collar date.",
+    lead: "Ten days",
+    alt: "A couple photographed side by side in plain white cotton tees",
+  },
+  {
+    family: "Friends",
+    product: {
+      id: "squad-set",
+      name: "The Squad Set",
+      price: "₹4,200",
+      badge: "Customizable",
+      cloth: "Combed cotton jersey, 220gsm — script print, hand-screened.",
+      note: "One line across the whole group, in a script that survives being photographed badly. Order six or more and we cut them from a single dye lot, so nobody turns up in a slightly different white.",
+      colors: [
+        { name: "Bone", hex: "#e6e0d5" },
+        { name: "Clay", hex: "#b08a6e" },
+      ],
+      out: [],
+      image: unsplash("1572947247229-774cc3a30caa"),
+    },
+    pitch: "Your line, your names on the back, sizes mixed across the group.",
+    lead: "Two weeks",
+    alt: "Four friends standing together in matching script-print tees",
+  },
+  {
+    family: "Friends",
+    product: {
+      id: "back-print-crew",
+      name: "Back-Print Crew",
+      price: "₹4,600",
+      badge: "Customizable",
+      cloth: "Combed cotton jersey, 240gsm — back print, white on black.",
+      note: "The print sits between the shoulder blades where a group photograph actually reads it. Made for teams, trips and anything with a date attached; we keep the screen on file so latecomers get the same shirt.",
+      colors: [
+        { name: "Ink", hex: "#23211f" },
+        { name: "Sable", hex: "#4a3c2f" },
+      ],
+      out: [],
+      image: unsplash("1768039376161-2e7307d470d6"),
+    },
+    pitch: "Set your own back print, add numbers, or reorder next year.",
+    lead: "Two weeks",
+    alt: "Two people photographed from behind in black tees with white back prints",
+  },
+  {
+    family: "Quotes",
+    product: {
+      id: "one-liner-tee",
+      name: "The One-Liner",
+      price: "₹3,900",
+      badge: "Customizable",
+      cloth: "Combed cotton jersey, 220gsm — single line, small caps.",
+      note: "One line, set small and centred, in the house type. It works because it is quiet: the joke lands when someone gets close enough to read it, not from across the room.",
+      colors: [
+        { name: "Ink", hex: "#23211f" },
+        { name: "Chalk", hex: "#f0ece4" },
+      ],
+      out: [],
+      image: unsplash("1572418963833-e29a6928575e"),
+    },
+    pitch: "Send the line — we come back with three settings to choose from.",
+    lead: "Ten days",
+    alt: "A folded black tee printed with a single line of small white capitals",
+  },
+  {
+    family: "Quotes",
+    product: {
+      id: "big-back-print",
+      name: "The Big Back Print",
+      price: "₹4,400",
+      badge: "Customizable",
+      cloth: "Combed cotton jersey, 240gsm — full back panel, hand-screened.",
+      note: "For a line that has earned some room. Drawn by hand and screened across the full back panel, in as many colours as the idea needs — send a sketch, a photograph or just the words.",
+      colors: [
+        { name: "Ink", hex: "#23211f" },
+        { name: "Forest", hex: "#3f4a3c" },
+      ],
+      out: [],
+      image: unsplash("1579118277971-6d66635e00b7"),
+    },
+    pitch: "Your words drawn by hand, front print or back, in your colours.",
+    lead: "Two weeks",
+    alt: "A large illustrated slogan screen-printed across the back of a dark tee",
+  },
+];
+
+export const CUSTOM_TEE_PRODUCTS: Product[] = CUSTOM_TEES.map((t) => t.product);
+
 /** Every product the site knows about, real or placeholder — the single lookup source for routing and the bag. */
 export const ALL_PRODUCTS: Product[] = [
   ...PRODUCTS,
   ...PREMIUM_EXTRA,
   ...TRENDING_EXTRA,
+  ...CUSTOM_TEE_PRODUCTS,
 ];
 
 /** The "Premium collection" carousel: the curated five, padded to twenty. */
@@ -799,4 +962,41 @@ export const LOOKBOOK_IMAGES = [
   "/images/lookbook-01.webp",
   "/images/lookbook-02.webp",
   "/images/lookbook-03.webp",
+];
+
+/**
+ * Wide editorial photography for the hero. It gets its own helper because a
+ * full-bleed hero needs a landscape crop at display width, not the 900×1150
+ * product plate `unsplash()` returns.
+ */
+function unsplashWide(photoId: string) {
+  return `https://images.unsplash.com/photo-${photoId}?w=2400&h=1400&fit=crop&q=80&auto=format`;
+}
+
+export const HERO_SLIDES: HeroSlide[] = [
+  {
+    id: "utility",
+    image: unsplashWide("1544022613-e87ca75a784a"),
+    alt: "Washed olive utility jacket worn open over a white tee against a bare plaster wall",
+  },
+  {
+    id: "camel",
+    image: unsplashWide("1539533018447-63fcce2678e3"),
+    alt: "Camel wool wrap coat photographed on weathered stone steps",
+  },
+  {
+    id: "rail",
+    image: unsplashWide("1445205170230-053b83016050"),
+    alt: "A rail of knitwear and shearling in bone and sand, lit warm from above",
+  },
+  {
+    id: "tailoring",
+    image: unsplashWide("1490114538077-0a7f8cb49891"),
+    alt: "Tailoring laid out flat — jacket, shirt, wool scarf and leather brogues",
+  },
+  {
+    id: "street",
+    image: unsplashWide("1539109136881-3be0616acf4b"),
+    alt: "A belted long coat photographed from behind on a wet city square",
+  },
 ];

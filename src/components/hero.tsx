@@ -6,13 +6,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 import { useSlowConnection } from "@/hooks/use-slow-connection";
-import { LOOKBOOK_IMAGES, PRODUCTS, TRENDING } from "@/lib/data";
-
-const SLIDES = TRENDING.map((t, i) => ({
-  ...t,
-  name: PRODUCTS.find((p) => p.id === t.id)?.name ?? t.id,
-  image: LOOKBOOK_IMAGES[(i + 1) % LOOKBOOK_IMAGES.length],
-}));
+import { HERO_SLIDES } from "@/lib/data";
 
 const EASE = [0.2, 0.6, 0.2, 1] as const;
 
@@ -30,7 +24,7 @@ export function Hero() {
       return;
     }
     timer.current = setInterval(() => {
-      setIndex((i) => (i + 1) % SLIDES.length);
+      setIndex((i) => (i + 1) % HERO_SLIDES.length);
     }, 5000);
   }
 
@@ -41,12 +35,10 @@ export function Hero() {
     };
   }, []);
 
-  const active = SLIDES[index];
-
   return (
     <section className="relative left-1/2 w-screen -ml-[50vw]">
       <div className="relative h-[92vh] max-h-[820px] min-h-[600px] w-full overflow-hidden bg-[#1a1917]">
-        {SLIDES.map((slide, i) => (
+        {HERO_SLIDES.map((slide, i) => (
           <div
             key={slide.id}
             className="absolute inset-0 transition-opacity duration-[900ms]"
@@ -63,14 +55,14 @@ export function Hero() {
             >
               <Image
                 src={slide.image}
-                alt={`${slide.name} — trending look, full length`}
+                alt={slide.alt}
                 fill
                 preload={i === 0 && !slow}
                 loading={i === 0 && !slow ? "eager" : "lazy"}
                 quality={i !== 0 && slow ? 40 : 75}
                 sizes="100vw"
                 style={{ filter: "sepia(0.16) saturate(0.88) contrast(1.06)" }}
-                className="object-cover object-top"
+                className="object-cover object-center"
               />
             </motion.div>
           </div>
@@ -85,12 +77,12 @@ export function Hero() {
               Trending now
             </span>
             <span className="text-[11px] tracking-[0.14em] text-white/65 uppercase font-feature-tnum">
-              {String(index + 1).padStart(2, "0")} / {String(SLIDES.length).padStart(2, "0")}
+              {String(index + 1).padStart(2, "0")} /{" "}
+              {String(HERO_SLIDES.length).padStart(2, "0")}
             </span>
           </div>
 
           <motion.div
-            key={active.id}
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: EASE }}
@@ -125,21 +117,6 @@ export function Hero() {
             </div>
           </motion.div>
         </div>
-
-      </div>
-
-      <div className="mx-auto max-w-[1240px] px-5 pt-6 sm:px-6 sm:pt-7">
-        <div className="flex flex-wrap items-baseline justify-between gap-4">
-          <span className="font-heading text-[19px] leading-tight">
-            {active.name}
-          </span>
-          <span className="text-xs tracking-[0.09em] text-foreground/55 uppercase font-feature-tnum">
-            {active.meta}
-          </span>
-        </div>
-        <p className="mt-4 text-xs tracking-[0.1em] text-foreground/55 uppercase font-feature-tnum">
-          Waitlist open · 400 pieces · ships 12 September
-        </p>
       </div>
     </section>
   );

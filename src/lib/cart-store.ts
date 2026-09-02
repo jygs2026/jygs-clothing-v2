@@ -85,7 +85,8 @@ export const useCartStore = create<CartState>()(
 
       buyNow: (product, colorName, size, qty = 1) => {
         get().addLine(product, colorName, size, qty);
-        set({ open: true, step: "details" });
+        // The caller navigates to /checkout; the bag sheet stays shut.
+        set({ open: false, step: "details" });
       },
 
       changeLineSize: (key, size) => {

@@ -8,10 +8,11 @@ import { MobileNav } from "@/components/mobile-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { useMounted } from "@/hooks/use-mounted";
+import { useOpenBag } from "@/hooks/use-open-bag";
 import { useCartStore } from "@/lib/cart-store";
 
 export function SiteHeader() {
-  const openBag = useCartStore((s) => s.openBag);
+  const openBag = useOpenBag();
   const count = useCartStore((s) => s.count());
   const mounted = useMounted();
 
@@ -38,6 +39,12 @@ export function SiteHeader() {
             className="text-sm hover:text-accent-2 transition-colors"
           >
             Trending
+          </Link>
+          <Link
+            href="/#customize"
+            className="text-sm hover:text-accent-2 transition-colors"
+          >
+            Customize
           </Link>
           <Link
             href="/#atelier"

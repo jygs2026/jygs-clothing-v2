@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -12,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useOpenBag } from "@/hooks/use-open-bag";
 import { useCartStore } from "@/lib/cart-store";
 import { FIT_TABLE, formatMoney, priceToNumber } from "@/lib/data";
 import { SIZES } from "@/lib/types";
@@ -33,9 +35,10 @@ export function ProductPurchasePanel({
   const [qty, setQty] = useState(1);
   const [guideOpen, setGuideOpen] = useState(false);
 
-  const openBag = useCartStore((s) => s.openBag);
+  const openBag = useOpenBag();
   const addLine = useCartStore((s) => s.addLine);
   const buyNow = useCartStore((s) => s.buyNow);
+  const router = useRouter();
 
   const unit = priceToNumber(product.price);
   const sizeUnavailable = !madeToOrder && (product.out as string[]).includes(size);
@@ -52,6 +55,7 @@ export function ProductPurchasePanel({
   function handleBuyNow() {
     if (sizeUnavailable) return;
     buyNow(product, color.name, size, qty);
+    router.push("/checkout");
   }
 
   return (
