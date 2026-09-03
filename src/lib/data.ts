@@ -1,3 +1,4 @@
+import { SIZES } from "@/lib/types";
 import type {
   CustomFamily,
   CustomTee,
@@ -6,6 +7,7 @@ import type {
   Product,
   ProductSpec,
   Review,
+  Size,
   TrendingEntry,
 } from "@/lib/types";
 
@@ -745,13 +747,6 @@ export const TRENDING_META = [
   "148 sold · 60 left",
 ];
 
-/** Where "Customize" and "Tell us your idea" send people. Digits only, no +. */
-export const STUDIO_WHATSAPP = "911234567890";
-
-export function whatsappLink(message: string) {
-  return `https://wa.me/${STUDIO_WHATSAPP}?text=${encodeURIComponent(message)}`;
-}
-
 export const CUSTOM_FAMILIES: {
   key: CustomFamily;
   label: string;
@@ -938,6 +933,33 @@ export const TRENDING_COLLECTION: { product: Product; meta: string }[] = [
   { product: TRENDING_EXTRA[13], meta: "194 sold · 19 left" },
   { product: TRENDING_EXTRA[14], meta: "58 sold · cut to order" },
 ];
+
+/**
+ * The shelves a piece can be opened from. The five core pieces sit in both
+ * Premium and Trending, so which one a reader came through cannot be read
+ * back from the data — cards carry the key in `?from=`, and the breadcrumb
+ * names the shelf the reader actually used.
+ */
+export const SECTIONS = {
+  collection: { label: "Premium Collection", href: "/#collection" },
+  trending: { label: "Trending Collections", href: "/#trending" },
+  customize: { label: "Customize Yours", href: "/#customize" },
+} as const;
+
+export type SectionKey = keyof typeof SECTIONS;
+
+export function sectionFor(key: string | null | undefined) {
+  return key && key in SECTIONS ? SECTIONS[key as SectionKey] : SECTIONS.collection;
+}
+
+/**
+ * The size a one-click "add to bag" should pick. M unless it has gone, then
+ * the smallest size still cut — nobody means XS when they mean "just add it".
+ */
+export function defaultSizeFor(product: Product): Size {
+  if (!product.out.includes("M")) return "M";
+  return SIZES.find((size) => !product.out.includes(size)) ?? "M";
+}
 
 export function getProduct(id: string): Product | undefined {
   return ALL_PRODUCTS.find((p) => p.id === id);

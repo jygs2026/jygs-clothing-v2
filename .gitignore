@@ -32,6 +32,9 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# ...except the public studio contact details, which every build needs.
+!.env
+!.env.example
 
 # vercel
 .vercel

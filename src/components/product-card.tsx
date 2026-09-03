@@ -1,33 +1,47 @@
 "use client";
 
-import { ShoppingBag } from "lucide-react";
+import { Heart, ShoppingBag } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import { ProductImage } from "@/components/product-image";
 import { Button } from "@/components/ui/button";
+import { useMounted } from "@/hooks/use-mounted";
 import { useOpenBag } from "@/hooks/use-open-bag";
 import { useCartStore } from "@/lib/cart-store";
-import { SIZES } from "@/lib/types";
+import { defaultSizeFor, type SectionKey } from "@/lib/data";
 import type { Product } from "@/lib/types";
+import { cn } from "@/lib/utils";
+import { useWishlistStore } from "@/lib/wishlist-store";
 
 export function ProductCard({
   product,
   rank,
   meta,
+  from,
 }: {
   product: Product;
   rank?: string;
   meta?: string;
+  from?: SectionKey;
 }) {
   const [hovered, setHovered] = useState(false);
   const openBag = useOpenBag();
   const addLine = useCartStore((s) => s.addLine);
+  const toggleSaved = useWishlistStore((s) => s.toggle);
+  const inWishlist = useWishlistStore((s) => s.ids.includes(product.id));
+  const mounted = useMounted();
+  const router = useRouter();
+  // The wishlist is restored from localStorage; the server cannot know what
+  // is saved, so the heart fills only once the browser has caught up.
+  const saved = mounted && inWishlist;
 
-  const href = `/product/${product.id}`;
-  const firstAvailableSize =
-    SIZES.find((s) => !product.out.includes(s)) ?? "M";
+  // `from` names the shelf this card sits on, so the product page's
+  // breadcrumb can point back to it.
+  const href = from ? `/product/${product.id}?from=${from}` : `/product/${product.id}`;
+  const firstAvailableSize = defaultSizeFor(product);
 
   function handleAdd() {
     addLine(product, product.colors[0].name, firstAvailableSize);
@@ -37,6 +51,16 @@ export function ProductCard({
         onClick: () => openBag(),
       },
     });
+  }
+
+  function handleSave() {
+    toggleSaved(product.id);
+    toast(
+      saved
+        ? `${product.name} removed from your wishlist`
+        : `${product.name} saved to your wishlist`,
+      { action: { label: "Wishlist", onClick: () => router.push("/account/wishlist") } }
+    );
   }
 
   return (
@@ -70,6 +94,30 @@ export function ProductCard({
         <span className="absolute top-3.5 left-3.5 z-10 inline-flex items-center rounded-[3px] border border-accent bg-background px-2.5 py-[3px] text-[10px] tracking-[0.1em] text-accent uppercase">
           {rank ? `${rank} · ${product.badge}` : product.badge}
         </span>
+
+        <button
+          type="button"
+          aria-pressed={saved}
+          aria-label={
+            saved
+              ? `Remove ${product.name} from wishlist`
+              : `Save ${product.name} to wishlist`
+          }
+          title={saved ? "Saved to wishlist" : "Save to wishlist"}
+          onClick={handleSave}
+          className={cn(
+            "absolute top-3.5 right-3.5 z-10 flex size-8 items-center justify-center rounded-full border bg-background/95 transition-colors",
+            saved
+              ? "border-accent text-accent-2"
+              : "border-border text-foreground/55 hover:border-accent hover:text-accent-2"
+          )}
+        >
+          <Heart
+            className="size-4"
+            strokeWidth={1.5}
+            fill={saved ? "currentColor" : "none"}
+          />
+        </button>
       </div>
 
       {/* Name, price and cloth are one target — the whole block opens the

@@ -2,7 +2,7 @@ import { Atelier } from "@/components/atelier";
 import { Customize } from "@/components/customize";
 import { ContactSection } from "@/components/contact-section";
 import { Hero } from "@/components/hero";
-import { ProductCard } from "@/components/product-card";
+import { ProductCarousel } from "@/components/product-carousel";
 import { Reveal } from "@/components/reveal";
 import { WaitlistSection } from "@/components/waitlist-section";
 import { PREMIUM_COLLECTION, TRENDING_COLLECTION } from "@/lib/data";
@@ -19,7 +19,7 @@ export default function Home() {
           <div className="flex flex-wrap items-baseline justify-between gap-6">
             <div>
               <span className="mb-3.5 block text-[13px] tracking-[0.08em] text-accent-2 uppercase font-feature-tnum">
-                Volume 01 — five pieces
+                Cut in small runs
               </span>
               <h2 className="font-heading text-[30px] font-normal leading-[1.14] tracking-[-0.008em] sm:text-[42px]">
                 Premium collection
@@ -34,10 +34,12 @@ export default function Home() {
       </Reveal>
 
       <Reveal>
-        <div className="grid grid-cols-1 gap-x-6 gap-y-12 pb-18 sm:grid-cols-3 lg:grid-cols-4">
-          {PREMIUM_COLLECTION.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+        <div className="pb-18">
+          <ProductCarousel
+            from="collection"
+            label="Premium collection"
+            items={PREMIUM_COLLECTION.map((product) => ({ product }))}
+          />
         </div>
       </Reveal>
 
@@ -64,15 +66,16 @@ export default function Home() {
       </Reveal>
 
       <Reveal>
-        <div className="grid grid-cols-1 gap-x-6 gap-y-12 pb-20 sm:grid-cols-3 lg:grid-cols-4">
-          {TRENDING_COLLECTION.map(({ product, meta }, i) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              rank={String(i + 1).padStart(2, "0")}
-              meta={meta}
-            />
-          ))}
+        <div className="pb-20">
+          <ProductCarousel
+            from="trending"
+            label="Trending collections"
+            items={TRENDING_COLLECTION.map(({ product, meta }, i) => ({
+              product,
+              meta,
+              rank: String(i + 1).padStart(2, "0"),
+            }))}
+          />
         </div>
       </Reveal>
 

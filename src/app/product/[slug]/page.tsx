@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
+import {
+  ProductBreadcrumb,
+  ProductBreadcrumbFallback,
+} from "@/components/product-breadcrumb";
 import { ProductGallery } from "@/components/product-gallery";
 import { ProductPurchasePanel } from "@/components/product-purchase-panel";
 import { Reveal } from "@/components/reveal";
@@ -29,6 +33,8 @@ export async function generateMetadata({
   return {
     title: `${product.name} — JYGS`,
     description: product.note,
+    // `?from=` only tells the breadcrumb which shelf was used.
+    alternates: { canonical: `/product/${product.id}` },
   };
 }
 
@@ -46,16 +52,9 @@ export default async function ProductPage({
 
   return (
     <div className="mx-auto max-w-[1240px] px-5 sm:px-6">
-      <nav
-        aria-label="Breadcrumb"
-        className="flex items-center gap-2.5 py-5.5 text-[11.5px] tracking-[0.09em] text-foreground/50 uppercase"
-      >
-        <Link href="/#collection" className="underline underline-offset-3">
-          Volume 01
-        </Link>
-        <span aria-hidden="true">/</span>
-        <span className="text-foreground">{product.name}</span>
-      </nav>
+      <Suspense fallback={<ProductBreadcrumbFallback name={product.name} />}>
+        <ProductBreadcrumb name={product.name} />
+      </Suspense>
 
       <section className="grid grid-cols-1 items-start gap-9 pb-16 min-[860px]:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] min-[860px]:gap-x-18">
         <ProductGallery productName={product.name} image={product.image} />

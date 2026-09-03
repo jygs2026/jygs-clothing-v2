@@ -1,26 +1,34 @@
 "use client";
 
-import { ShoppingBag } from "lucide-react";
+import { Search, ShoppingBag, User } from "lucide-react";
 import Link from "next/link";
 
+import { AccountMenu } from "@/components/account-menu";
 import { Marquee } from "@/components/marquee";
 import { MobileNav } from "@/components/mobile-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { useMounted } from "@/hooks/use-mounted";
 import { useOpenBag } from "@/hooks/use-open-bag";
+import { useAuthStore } from "@/lib/auth-store";
 import { useCartStore } from "@/lib/cart-store";
+import { useSearchStore } from "@/lib/search-store";
 
 export function SiteHeader() {
   const openBag = useOpenBag();
   const count = useCartStore((s) => s.count());
+  const account = useAuthStore((s) => s.account);
+  const openSearch = useSearchStore((s) => s.openSearch);
   const mounted = useMounted();
 
   const hasBag = mounted && count > 0;
+  // Both are restored from localStorage, so neither can be trusted until
+  // hydration — the server has no idea who is looking.
+  const signedIn = mounted ? account : null;
 
   return (
     <div className="sticky top-0 z-30 bg-background">
-      <nav className="mx-auto flex max-w-[1240px] items-center gap-4 px-5 py-3.5 sm:gap-7 sm:px-6 border-b border-border">
+      <nav className="mx-auto flex h-[var(--jygs-nav-h)] max-w-[1240px] items-center gap-4 border-b border-border px-5 sm:gap-7 sm:px-6">
         <Link
           href="/"
           className="mr-auto font-heading text-xl font-semibold tracking-[0.26em]"
@@ -59,6 +67,25 @@ export function SiteHeader() {
             Contact
           </Link>
         </div>
+        <button
+          type="button"
+          onClick={() => openSearch()}
+          aria-label="Search JYGS"
+          className="flex h-8 w-[34px] items-center justify-center text-foreground transition-colors hover:text-accent-2"
+        >
+          <Search className="size-[19px]" strokeWidth={1.4} />
+        </button>
+        {signedIn ? (
+          <AccountMenu account={signedIn} />
+        ) : (
+          <Link
+            href="/account"
+            aria-label="Sign in"
+            className="flex h-8 w-[34px] items-center justify-center text-foreground transition-colors hover:text-accent-2"
+          >
+            <User className="size-[19px]" strokeWidth={1.4} />
+          </Link>
+        )}
         <button
           type="button"
           onClick={openBag}

@@ -1,13 +1,14 @@
 "use client";
 
-import { MessageCircle, ShoppingBag } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { ArrowRight, MessageCircle } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 
+import { Carousel } from "@/components/carousel";
 import { ProductImage } from "@/components/product-image";
 import { Button } from "@/components/ui/button";
-import { useCartStore } from "@/lib/cart-store";
-import { CUSTOM_FAMILIES, CUSTOM_TEES, whatsappLink } from "@/lib/data";
+import { CUSTOM_FAMILIES, CUSTOM_TEES } from "@/lib/data";
+import { whatsappLink } from "@/lib/site-config";
 import { SIZES } from "@/lib/types";
 import type { CustomFamily, CustomTee } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -88,10 +89,18 @@ export function Customize() {
         ) : null}
       </div>
 
-      <div className="mt-9 grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-        {shown.map((tee) => (
-          <CustomTeeCard key={tee.product.id} tee={tee} />
-        ))}
+      <div className="mt-9">
+        {/* Remounting on filter change snaps the shelf back to the first tee. */}
+        <Carousel
+          key={filter}
+          label="Customizable tees"
+          storageKey={`customize:${filter}`}
+          itemClassName="w-[240px] sm:w-[272px] lg:w-[300px]"
+        >
+          {shown.map((tee) => (
+            <CustomTeeCard key={tee.product.id} tee={tee} />
+          ))}
+        </Carousel>
       </div>
     </section>
   );
@@ -99,16 +108,11 @@ export function Customize() {
 
 function CustomTeeCard({ tee }: { tee: CustomTee }) {
   const { product, family, pitch, lead, alt } = tee;
-  const buyNow = useCartStore((s) => s.buyNow);
-  const router = useRouter();
 
+  // The first size still in stock and the house colour — what the WhatsApp
+  // brief quotes, so the studio has something concrete to price.
   const size = SIZES.find((s) => !product.out.includes(s)) ?? "M";
   const color = product.colors[0];
-
-  function get() {
-    buyNow(product, color.name, size, 1);
-    router.push("/checkout");
-  }
 
   const brief =
     `Hello JYGS — I'd like to customise the ${product.name} (${product.price}).\n\n` +
@@ -116,12 +120,17 @@ function CustomTeeCard({ tee }: { tee: CustomTee }) {
     `Colour: ${color.name} · Size: ${size}\n\n` +
     "What I'd like changed:";
 
+  const href = `/product/${product.id}?from=customize`;
+
   return (
     <article className="flex h-full flex-col">
       <div className="relative">
-        <div className="relative block aspect-4/5 w-full overflow-hidden">
+        <Link
+          href={href}
+          className="relative block aspect-4/5 w-full cursor-pointer overflow-hidden"
+        >
           <ProductImage src={product.image} alt={alt} hint={product.name} />
-        </div>
+        </Link>
         <span className="absolute top-3.5 left-3.5 z-10 inline-flex items-center rounded-[3px] border border-accent bg-background px-2.5 py-[3px] text-[10px] tracking-[0.1em] text-accent uppercase">
           {family}
         </span>
@@ -146,12 +155,12 @@ function CustomTeeCard({ tee }: { tee: CustomTee }) {
 
       <div className="mt-auto grid grid-cols-2 gap-2.5 pt-4">
         <Button
-          type="button"
-          onClick={get}
+          render={<Link href={href} />}
+          nativeButton={false}
           variant="outline"
           className="border-accent text-accent hover:bg-accent/10 hover:text-accent"
         >
-          <ShoppingBag className="size-4" strokeWidth={1.4} />
+          <ArrowRight className="size-4" strokeWidth={1.4} />
           Get
         </Button>
         <Button

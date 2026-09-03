@@ -4,10 +4,18 @@ import { Check } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { FormField } from "@/components/ui/form-field";
+import { useForm } from "@/hooks/use-form";
+import { email } from "@/lib/validation";
 
 export function WaitlistSection() {
   const [joined, setJoined] = useState(false);
+
+  const form = useForm({
+    id: "wl",
+    fields: { email: { validate: email() } },
+    onSubmit: () => setJoined(true),
+  });
 
   return (
     <section id="waitlist" className="scroll-mt-[120px] py-16">
@@ -21,18 +29,20 @@ export function WaitlistSection() {
 
       {!joined ? (
         <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            setJoined(true);
-          }}
-          className="mt-7 flex max-w-[480px] flex-wrap items-stretch gap-3.5"
+          onSubmit={form.handleSubmit}
+          noValidate
+          className="mt-7 flex max-w-[480px] flex-wrap items-start gap-3.5"
         >
-          <Input
+          <FormField
+            form={form}
+            name="email"
+            label="Email address"
             type="email"
-            required
+            inputMode="email"
+            autoComplete="email"
             placeholder="you@example.com"
-            aria-label="Email address"
-            className="min-h-[38px] flex-1"
+            rootClassName="min-w-[220px] flex-1 [&_label]:sr-only"
+            className="min-h-[38px]"
           />
           <Button
             type="submit"

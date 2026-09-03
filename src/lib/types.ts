@@ -99,3 +99,27 @@ export type Order = {
   paid: string;
   count: number;
 };
+
+/** Where an order is sent — kept on the account and prefilled at checkout. */
+export type Address = {
+  line: string;
+  city: string;
+  postcode: string;
+  country: string;
+};
+
+export type CardBrand = "Visa" | "Mastercard" | "Amex" | "RuPay" | "Card";
+
+/**
+ * A saved way to pay. Only what a receipt would show is ever kept — the brand,
+ * the last four digits and the expiry. Full numbers are read by the form and
+ * thrown away in the same breath.
+ */
+export type PaymentCard = {
+  id: string;
+  brand: CardBrand;
+  last4: string;
+  expiry: string;
+  holder: string;
+  primary: boolean;
+};

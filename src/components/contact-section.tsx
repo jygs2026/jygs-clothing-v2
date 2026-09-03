@@ -3,10 +3,9 @@
 import { Check, Mail, MapPin, Phone } from "lucide-react";
 import { useState } from "react";
 
-import { SOCIAL_LINKS } from "@/components/social-icons";
+import { SocialLinks } from "@/components/social-icons";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { FormField } from "@/components/ui/form-field";
 import {
   Select,
   SelectContent,
@@ -14,8 +13,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { whatsappLink } from "@/lib/data";
+import { useForm } from "@/hooks/use-form";
+import { CONTACT_EMAIL, whatsappDisplay, whatsappLink } from "@/lib/site-config";
+import { all, email, maxLength, minLength, personName } from "@/lib/validation";
 
 const TOPICS = [
   "General enquiry",
@@ -30,13 +30,13 @@ const DETAILS = [
   {
     icon: Mail,
     label: "Email",
-    value: "hello@jygs.co",
-    href: "mailto:hello@jygs.co",
+    value: CONTACT_EMAIL,
+    href: `mailto:${CONTACT_EMAIL}`,
   },
   {
     icon: Phone,
     label: "WhatsApp",
-    value: "+91 12345 67890",
+    value: whatsappDisplay(),
     href: whatsappLink("Hello JYGS — I have a question."),
   },
   {
@@ -48,8 +48,23 @@ const DETAILS = [
 ];
 
 export function ContactSection() {
-  const [name, setName] = useState("");
-  const [sent, setSent] = useState(false);
+  const [sent, setSent] = useState("");
+
+  const form = useForm({
+    id: "ct",
+    fields: {
+      name: { validate: personName("Your name") },
+      email: { validate: email() },
+      topic: { initial: TOPICS[0] },
+      message: {
+        validate: all(
+          minLength(10, "The message"),
+          maxLength(1200, "The message")
+        ),
+      },
+    },
+    onSubmit: (values) => setSent(values.name.trim()),
+  });
 
   return (
     <section
@@ -70,40 +85,32 @@ export function ContactSection() {
         </p>
 
         {!sent ? (
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              setSent(true);
-            }}
-            className="mt-8 grid max-w-[520px] gap-4.5"
-          >
+          <form onSubmit={form.handleSubmit} noValidate className="mt-8 grid max-w-[520px] gap-4.5">
             <div className="grid grid-cols-1 gap-4.5 sm:grid-cols-2">
-              <div>
-                <Label htmlFor="ct-name" className="mb-1.5 text-xs text-foreground/70">
-                  Name
-                </Label>
-                <Input
-                  id="ct-name"
-                  name="name"
-                  type="text"
-                  required
-                  placeholder="Your name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </div>
-              <div>
-                <Label htmlFor="ct-email" className="mb-1.5 text-xs text-foreground/70">
-                  Email
-                </Label>
-                <Input id="ct-email" name="email" type="email" required placeholder="you@example.com" />
-              </div>
+              <FormField
+                form={form}
+                name="name"
+                label="Name"
+                type="text"
+                autoComplete="name"
+                placeholder="Your name"
+              />
+              <FormField
+                form={form}
+                name="email"
+                label="Email"
+                type="email"
+                inputMode="email"
+                autoComplete="email"
+                placeholder="you@example.com"
+              />
             </div>
-            <div>
-              <Label htmlFor="ct-topic" className="mb-1.5 text-xs text-foreground/70">
-                Topic
-              </Label>
-              <Select name="topic" defaultValue={TOPICS[0]}>
+            <FormField form={form} name="topic" label="Topic">
+              <Select
+                name="topic"
+                value={form.values.topic}
+                onValueChange={(value) => form.setValue("topic", String(value))}
+              >
                 <SelectTrigger id="ct-topic" className="w-full">
                   <SelectValue />
                 </SelectTrigger>
@@ -115,19 +122,16 @@ export function ContactSection() {
                   ))}
                 </SelectContent>
               </Select>
-            </div>
-            <div>
-              <Label htmlFor="ct-message" className="mb-1.5 text-xs text-foreground/70">
-                Message
-              </Label>
-              <Textarea
-                id="ct-message"
-                name="message"
-                rows={5}
-                required
-                placeholder="How can we help?"
-              />
-            </div>
+            </FormField>
+            <FormField
+              form={form}
+              name="message"
+              label="Message"
+              as="textarea"
+              rows={5}
+              placeholder="How can we help?"
+              hint="A line about the piece, the order number, or the fit you are after."
+            />
             <Button
               type="submit"
               variant="outline"
@@ -140,7 +144,7 @@ export function ContactSection() {
           <div className="mt-8 flex max-w-[520px] flex-col gap-3.5">
             <span className="flex items-center gap-2.5 text-[14.5px] leading-[26px] text-accent-2">
               <Check className="size-[17px]" strokeWidth={1.4} />
-              Message sent{name ? `, ${name}` : ""} — thank you.
+              Message sent{sent ? `, ${sent}` : ""} — thank you.
             </span>
             <p className="text-sm leading-[25px] text-foreground/70">
               We read every note ourselves and reply from a person, not a
@@ -149,7 +153,10 @@ export function ContactSection() {
             <Button
               type="button"
               variant="ghost"
-              onClick={() => setSent(false)}
+              onClick={() => {
+                form.reset();
+                setSent("");
+              }}
               className="self-start text-accent hover:bg-accent/10 hover:text-accent"
             >
               Send another
@@ -194,20 +201,7 @@ export function ContactSection() {
         <span className="block text-[11px] tracking-[0.11em] text-foreground/50 uppercase">
           Follow along
         </span>
-        <div className="mt-3 flex items-center gap-3">
-          {SOCIAL_LINKS.map(({ label, href, icon: Icon }) => (
-            <a
-              key={label}
-              href={href}
-              target="_blank"
-              rel="noreferrer noopener"
-              aria-label={label}
-              className="flex size-8 items-center justify-center rounded-full border border-border text-foreground/60 transition-colors hover:border-accent hover:text-accent-2"
-            >
-              <Icon className="size-[16px]" />
-            </a>
-          ))}
-        </div>
+        <SocialLinks className="mt-3" />
 
         <p className="mt-6 text-[12.5px] leading-[21px] text-foreground/55">
           Studio hours: Monday–Friday, 9:00–18:00 GMT. Messages outside these

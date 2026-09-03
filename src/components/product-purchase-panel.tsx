@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowRight, Heart, ShoppingBag } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -13,12 +14,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useMounted } from "@/hooks/use-mounted";
 import { useOpenBag } from "@/hooks/use-open-bag";
 import { useCartStore } from "@/lib/cart-store";
 import { FIT_TABLE, formatMoney, priceToNumber } from "@/lib/data";
 import { SIZES } from "@/lib/types";
 import type { Product, ProductSpec } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { useWishlistStore } from "@/lib/wishlist-store";
 
 export function ProductPurchasePanel({
   product,
@@ -174,53 +177,82 @@ export function ProductPurchasePanel({
 
       <div className="my-6 border-t border-border" />
 
-      <div className="flex flex-wrap items-center gap-3.5">
-        <div className="flex items-center gap-0.5 rounded-md border border-border">
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
+        <div className="flex h-11 items-center rounded-[3px] border border-border">
           <button
             type="button"
             onClick={() => setQty((q) => Math.max(1, q - 1))}
+            disabled={qty === 1}
             aria-label="Decrease quantity"
-            className="flex size-[30px] items-center justify-center text-[15px]"
+            className="flex h-full w-11 items-center justify-center text-[17px] leading-none text-foreground/70 transition-colors hover:text-foreground disabled:opacity-35 disabled:hover:text-foreground/70"
           >
             −
           </button>
-          <span className="min-w-[26px] text-center text-sm font-feature-tnum">
+          <span
+            aria-live="polite"
+            className="min-w-[28px] text-center text-[15px] font-feature-tnum"
+          >
             {qty}
           </span>
           <button
             type="button"
             onClick={() => setQty((q) => Math.min(9, q + 1))}
+            disabled={qty === 9}
             aria-label="Increase quantity"
-            className="flex size-[30px] items-center justify-center text-[15px]"
+            className="flex h-full w-11 items-center justify-center text-[17px] leading-none text-foreground/70 transition-colors hover:text-foreground disabled:opacity-35 disabled:hover:text-foreground/70"
           >
             +
           </button>
         </div>
-        <span className="text-xs tracking-[0.08em] text-foreground/52 uppercase font-feature-tnum">
-          {formatMoney(qty * unit)} total
-        </span>
+
+        <p className="flex items-baseline gap-2.5">
+          <span className="text-[11px] tracking-[0.11em] text-foreground/50 uppercase">
+            Total
+          </span>
+          <span className="font-heading text-[22px] leading-none font-feature-tnum">
+            {formatMoney(qty * unit)}
+          </span>
+        </p>
       </div>
 
-      <div className="mt-4 flex gap-3">
+      {/* Two ways to buy, weighted: the bag is the everyday action, buying now
+          is the shortcut — same height, different pull. */}
+      <div className="mt-4.5 grid gap-3 sm:grid-cols-[1.12fr_1fr]">
         <Button
           type="button"
           onClick={handleAdd}
           disabled={sizeUnavailable}
-          variant="outline"
-          className="flex-1 border-accent text-accent hover:bg-accent/10 hover:text-accent"
+          className="group/add h-12 rounded-[3px] px-6 text-[12.5px] tracking-[0.14em] uppercase shadow-[0_1px_0_0_rgba(0,0,0,0.04)] transition-[transform,box-shadow,background-color] hover:-translate-y-px hover:shadow-[0_12px_26px_-16px] hover:shadow-foreground/60"
         >
+          <ShoppingBag
+            className="size-4 transition-transform group-hover/add:-translate-y-px"
+            strokeWidth={1.5}
+          />
           {sizeUnavailable ? "Size unavailable" : "Add to bag"}
         </Button>
         <Button
           type="button"
           onClick={handleBuyNow}
           disabled={sizeUnavailable}
-          variant="secondary"
-          className="flex-1 border border-border"
+          variant="outline"
+          className="group/buy h-12 rounded-[3px] border-accent px-6 text-[12.5px] tracking-[0.14em] text-accent-2 uppercase transition-[transform,background-color] hover:-translate-y-px hover:bg-accent/10 hover:text-accent-2"
         >
           Buy it now
+          <ArrowRight
+            className="size-4 transition-transform group-hover/buy:translate-x-0.5"
+            strokeWidth={1.5}
+          />
         </Button>
       </div>
+
+      {sizeUnavailable ? (
+        <p className="mt-3 text-[13px] leading-[22px] text-accent-2">
+          {color.name} in {size} has gone for this run. Try another size — or
+          write in and we will tell you when the pattern comes back.
+        </p>
+      ) : null}
+
+      <SaveToWishlist product={product} />
 
       <ul className="mt-6 grid list-none gap-2.5 p-0 text-[13.5px] leading-[23px] text-foreground/72">
         <li className="flex gap-2.5">
@@ -237,5 +269,52 @@ export function ProductPurchasePanel({
         </li>
       </ul>
     </div>
+  );
+}
+
+/**
+ * Saving is the quiet third option next to buying — a piece someone is not
+ * ready to commit to, kept where they can find it again.
+ */
+function SaveToWishlist({ product }: { product: Product }) {
+  const toggle = useWishlistStore((s) => s.toggle);
+  const inWishlist = useWishlistStore((s) => s.ids.includes(product.id));
+  const mounted = useMounted();
+  const router = useRouter();
+  // Nothing is known about the wishlist until localStorage is read.
+  const saved = mounted && inWishlist;
+
+  return (
+    <button
+      type="button"
+      aria-pressed={saved}
+      onClick={() => {
+        toggle(product.id);
+        toast(
+          saved
+            ? `${product.name} removed from your wishlist`
+            : `${product.name} saved to your wishlist`,
+          {
+            action: {
+              label: "Wishlist",
+              onClick: () => router.push("/account/wishlist"),
+            },
+          }
+        );
+      }}
+      className={cn(
+        "mt-4 inline-flex items-center gap-2 border-b py-1 text-[12px] tracking-[0.1em] uppercase transition-colors",
+        saved
+          ? "border-accent/40 text-accent-2"
+          : "border-transparent text-foreground/58 hover:border-accent/40 hover:text-accent-2"
+      )}
+    >
+      <Heart
+        className="size-4"
+        strokeWidth={1.5}
+        fill={saved ? "currentColor" : "none"}
+      />
+      {saved ? "Saved to wishlist" : "Save to wishlist"}
+    </button>
   );
 }

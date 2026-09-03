@@ -3,16 +3,35 @@
 import { Check, ChevronLeft, Lock } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, type ReactNode } from "react";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
 import { ProductImage } from "@/components/product-image";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { FormField } from "@/components/ui/form-field";
+import { SecretInput } from "@/components/ui/secret-input";
+import { useForm } from "@/hooks/use-form";
 import { useOpenBag } from "@/hooks/use-open-bag";
+import { useAuthStore } from "@/lib/auth-store";
 import { productForLine, useCartStore } from "@/lib/cart-store";
 import { formatMoney } from "@/lib/data";
+import type { BagLine } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import {
+  cardCvc,
+  cardExpiry,
+  cardNumber,
+  CVC_DIGITS,
+  digitsOnly,
+  email,
+  formatCardNumber,
+  formatExpiry,
+  minLength,
+  personName,
+  pinCode,
+  required,
+  all,
+} from "@/lib/validation";
 
 const STEPS = [
   { key: "details", num: "01", label: "Details" },
@@ -103,20 +122,43 @@ function Stepper({ step }: { step: "bag" | "details" | "payment" }) {
 
 function DetailsForm() {
   const submitDetails = useCartStore((s) => s.submitDetails);
+  // Signed in only saves typing — checkout never requires an account.
+  const account = useAuthStore((s) => s.account);
+
+  const form = useForm({
+    id: "ck",
+    fields: {
+      email: { initial: account?.email ?? "", validate: email() },
+      name: { initial: account?.name ?? "", validate: personName("Full name") },
+      addr: {
+        initial: account?.address?.line ?? "",
+        validate: all(required("An address"), minLength(6, "The address")),
+      },
+      city: {
+        initial: account?.address?.city ?? "",
+        validate: all(required("A city"), minLength(2, "The city")),
+      },
+      post: {
+        initial: account?.address?.postcode ?? "",
+        validate: pinCode(),
+        format: digitsOnly(6),
+      },
+      country: {
+        initial: account?.address?.country ?? "India",
+        validate: required("A country"),
+      },
+    },
+    onSubmit: (values) =>
+      submitDetails({
+        email: values.email.trim(),
+        name: values.name.trim(),
+        city: values.city.trim(),
+        postcode: values.post,
+      }),
+  });
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        const f = new FormData(e.currentTarget);
-        submitDetails({
-          email: String(f.get("email") ?? ""),
-          name: String(f.get("name") ?? ""),
-          city: String(f.get("city") ?? ""),
-          postcode: String(f.get("post") ?? ""),
-        });
-      }}
-    >
+    <form onSubmit={form.handleSubmit} noValidate>
       <h1 className="font-heading text-[32px] font-normal leading-[1.1] sm:text-[38px]">
         Shipping details
       </h1>
@@ -126,26 +168,58 @@ function DetailsForm() {
       </p>
 
       <div className="mt-8 grid gap-4.5 sm:max-w-[480px]">
-        <Field label="Email" id="ck-email">
-          <Input id="ck-email" name="email" type="email" required placeholder="you@example.com" />
-        </Field>
-        <Field label="Full name" id="ck-name">
-          <Input id="ck-name" name="name" type="text" required placeholder="As it appears on the card" />
-        </Field>
-        <Field label="Address" id="ck-addr">
-          <Input id="ck-addr" name="addr" type="text" required placeholder="Street and number" />
-        </Field>
+        <FormField
+          form={form}
+          name="email"
+          label="Email"
+          type="email"
+          inputMode="email"
+          autoComplete="email"
+          placeholder="you@example.com"
+        />
+        <FormField
+          form={form}
+          name="name"
+          label="Full name"
+          type="text"
+          autoComplete="name"
+          placeholder="As it appears on the card"
+        />
+        <FormField
+          form={form}
+          name="addr"
+          label="Address"
+          type="text"
+          autoComplete="address-line1"
+          placeholder="Street and number"
+        />
         <div className="grid grid-cols-[1.4fr_1fr] gap-4.5">
-          <Field label="City" id="ck-city">
-            <Input id="ck-city" name="city" type="text" required placeholder="Mumbai" />
-          </Field>
-          <Field label="PIN code" id="ck-post">
-            <Input id="ck-post" name="post" type="text" required placeholder="400001" />
-          </Field>
+          <FormField
+            form={form}
+            name="city"
+            label="City"
+            type="text"
+            autoComplete="address-level2"
+            placeholder="Mumbai"
+          />
+          <FormField
+            form={form}
+            name="post"
+            label="PIN code"
+            type="text"
+            inputMode="numeric"
+            autoComplete="postal-code"
+            placeholder="400001"
+            className="font-feature-tnum"
+          />
         </div>
-        <Field label="Country" id="ck-country">
-          <Input id="ck-country" name="country" type="text" required defaultValue="India" />
-        </Field>
+        <FormField
+          form={form}
+          name="country"
+          label="Country"
+          type="text"
+          autoComplete="country-name"
+        />
       </div>
 
       <Button
@@ -166,13 +240,20 @@ function PaymentForm() {
   const submitPayment = useCartStore((s) => s.submitPayment);
   const goToDetails = useCartStore((s) => s.goToDetails);
 
+  const form = useForm({
+    id: "ck-pay",
+    fields: {
+      card: { validate: cardNumber(), format: formatCardNumber },
+      exp: { validate: cardExpiry(), format: formatExpiry },
+      cvc: { validate: cardCvc(), format: digitsOnly(CVC_DIGITS) },
+    },
+    // The card details are never kept: the store only learns that a payment
+    // was taken. Swap this for the gateway call and the form is unchanged.
+    onSubmit: () => submitPayment(),
+  });
+
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        submitPayment();
-      }}
-    >
+    <form onSubmit={form.handleSubmit} noValidate>
       <h1 className="font-heading text-[32px] font-normal leading-[1.1] sm:text-[38px]">
         Payment
       </h1>
@@ -188,40 +269,36 @@ function PaymentForm() {
       </p>
 
       <div className="mt-8 grid gap-4.5 sm:max-w-[480px]">
-        <Field label="Card number" id="ck-card">
-          <Input
-            id="ck-card"
-            name="card"
+        <FormField
+          form={form}
+          name="card"
+          label="Card number"
+          type="text"
+          inputMode="numeric"
+          autoComplete="cc-number"
+          placeholder="4242 4242 4242 4242"
+          className="font-feature-tnum"
+        />
+        <div className="grid grid-cols-2 gap-4.5">
+          <FormField
+            form={form}
+            name="exp"
+            label="Expiry"
             type="text"
             inputMode="numeric"
-            required
-            placeholder="4242 4242 4242 4242"
+            autoComplete="cc-exp"
+            placeholder="MM/YY"
             className="font-feature-tnum"
           />
-        </Field>
-        <div className="grid grid-cols-2 gap-4.5">
-          <Field label="Expiry" id="ck-exp">
-            <Input
-              id="ck-exp"
-              name="exp"
-              type="text"
-              inputMode="numeric"
-              required
-              placeholder="09 / 29"
+          <FormField form={form} name="cvc" label="CVC">
+            <SecretInput
+              {...form.field("cvc")}
+              autoComplete="cc-csc"
+              maxLength={CVC_DIGITS}
+              placeholder="•••"
               className="font-feature-tnum"
             />
-          </Field>
-          <Field label="CVC" id="ck-cvc">
-            <Input
-              id="ck-cvc"
-              name="cvc"
-              type="text"
-              inputMode="numeric"
-              required
-              placeholder="123"
-              className="font-feature-tnum"
-            />
-          </Field>
+          </FormField>
         </div>
       </div>
 
@@ -264,39 +341,10 @@ function OrderSummary() {
       <h2 className="text-[11px] tracking-[0.14em] text-foreground/55 uppercase">
         Order summary
       </h2>
-      <div className="mt-5 flex flex-col gap-4">
-        {bag.map((line) => {
-          const product = productForLine(line.productId);
-          return (
-            <div key={line.key} className="flex gap-3.5">
-              <div className="relative aspect-3/4 w-14 shrink-0 overflow-hidden">
-                <ProductImage
-                  src={product?.image}
-                  alt={`${line.name} — ${line.color}`}
-                  hint={line.name}
-                />
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-baseline justify-between gap-3">
-                  <h3 className="truncate font-heading text-[15px] leading-tight">
-                    {line.name}
-                  </h3>
-                  <span className="shrink-0 text-[13px] text-foreground/78 font-feature-tnum">
-                    {formatMoney(line.qty * line.unit)}
-                  </span>
-                </div>
-                <p className="mt-1.5 text-[11px] tracking-[0.06em] text-foreground/55 uppercase">
-                  {line.color} · {line.size} · Qty {line.qty}
-                </p>
-                {product?.badge === "Made to order" ? (
-                  <p className="mt-1 text-[11px] tracking-[0.06em] text-accent-2 uppercase">
-                    Cut to measure
-                  </p>
-                ) : null}
-              </div>
-            </div>
-          );
-        })}
+      <div className="mt-5 flex flex-col divide-y divide-border/60">
+        {bag.map((line, i) => (
+          <SummaryLine key={line.key} line={line} index={i} />
+        ))}
       </div>
 
       <div className="mt-6 grid gap-2 border-t border-border pt-5 text-[13.5px]">
@@ -324,6 +372,66 @@ function OrderSummary() {
         long as you own it.
       </p>
     </aside>
+  );
+}
+
+/**
+ * One line of the order summary. Money and the remove control share a
+ * right-hand column — price at the top, "Remove" at the foot of the row —
+ * so the whole summary reads as two columns rather than each line trailing
+ * a stray link. Removal is undoable from the toast, as it is elsewhere.
+ */
+function SummaryLine({ line, index }: { line: BagLine; index: number }) {
+  const removeLine = useCartStore((s) => s.removeLine);
+  const restoreLine = useCartStore((s) => s.restoreLine);
+  const product = productForLine(line.productId);
+
+  function remove() {
+    removeLine(line.key);
+    toast(`${line.name} · ${line.size} removed`, {
+      action: {
+        label: "Undo",
+        onClick: () => restoreLine(line, index),
+      },
+    });
+  }
+
+  return (
+    <div className="flex gap-3.5 py-4 first:pt-0 last:pb-0">
+      <div className="relative aspect-3/4 w-14 shrink-0 overflow-hidden">
+        <ProductImage
+          src={product?.image}
+          alt={`${line.name} — ${line.color}`}
+          hint={line.name}
+        />
+      </div>
+
+      <div className="min-w-0 flex-1">
+        <h3 className="font-heading text-[15px] leading-[1.25]">{line.name}</h3>
+        <p className="mt-1.5 text-[11px] tracking-[0.06em] text-foreground/55 uppercase">
+          {line.color} · {line.size} · Qty {line.qty}
+        </p>
+        {product?.badge === "Made to order" ? (
+          <p className="mt-1 text-[11px] tracking-[0.06em] text-accent-2 uppercase">
+            Cut to measure
+          </p>
+        ) : null}
+      </div>
+
+      <div className="flex shrink-0 flex-col items-end justify-between gap-4">
+        <span className="text-[13px] text-foreground/78 font-feature-tnum">
+          {formatMoney(line.qty * line.unit)}
+        </span>
+        <button
+          type="button"
+          onClick={remove}
+          aria-label={`Remove ${line.name}, ${line.color}, size ${line.size}, from the order`}
+          className="cursor-pointer text-[11px] tracking-[0.06em] text-foreground/52 underline underline-offset-3 uppercase transition-colors hover:text-accent-2"
+        >
+          Remove
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -386,25 +494,6 @@ function EmptyState() {
       >
         See the collection
       </Button>
-    </div>
-  );
-}
-
-function Field({
-  label,
-  id,
-  children,
-}: {
-  label: string;
-  id: string;
-  children: ReactNode;
-}) {
-  return (
-    <div>
-      <Label htmlFor={id} className="mb-1.5 text-xs text-foreground/70">
-        {label}
-      </Label>
-      {children}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { SOCIAL_LINKS } from "@/components/social-icons";
+import { SocialLinks } from "@/components/social-icons";
 
 const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
   {
@@ -46,20 +46,7 @@ export function SiteFooter() {
             Short-run clothing. Two volumes a year, mended for as long as you
             own them.
           </p>
-          <div className="mt-5 flex items-center gap-3.5">
-            {SOCIAL_LINKS.map(({ label, href, icon: Icon }) => (
-              <a
-                key={label}
-                href={href}
-                target="_blank"
-                rel="noreferrer noopener"
-                aria-label={label}
-                className="flex size-8 items-center justify-center rounded-full border border-border text-foreground/60 transition-colors hover:border-accent hover:text-accent-2"
-              >
-                <Icon className="size-[16px]" />
-              </a>
-            ))}
-          </div>
+          <SocialLinks className="mt-5" />
         </div>
         {COLUMNS.map((col) => (
           <div key={col.title} className="flex flex-col gap-1.5">

@@ -32,6 +32,7 @@ type CartState = {
   incrementLine: (key: string) => void;
   decrementLine: (key: string) => void;
   removeLine: (key: string) => void;
+  restoreLine: (line: BagLine, index: number) => void;
 
   openBag: () => void;
   closeBag: () => void;
@@ -139,6 +140,17 @@ export const useCartStore = create<CartState>()(
 
       removeLine: (key) => {
         set((state) => ({ bag: state.bag.filter((b) => b.key !== key) }));
+      },
+
+      // Undo for `removeLine`: puts the line back where it was rather than
+      // at the end, so an undone removal leaves the bag exactly as it was.
+      restoreLine: (line, index) => {
+        set((state) => {
+          if (state.bag.some((b) => b.key === line.key)) return state;
+          const bag = state.bag.slice();
+          bag.splice(Math.min(index, bag.length), 0, line);
+          return { bag };
+        });
       },
 
       openBag: () => set({ open: true }),

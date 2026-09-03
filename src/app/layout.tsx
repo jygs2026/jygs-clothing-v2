@@ -3,6 +3,7 @@ import { Cormorant_Garamond, Lora } from "next/font/google";
 
 import { CartSheet } from "@/components/cart-sheet";
 import { Providers } from "@/components/providers";
+import { SearchOverlay } from "@/components/search-overlay";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { Toaster } from "@/components/ui/sonner";
@@ -40,6 +41,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <main className="flex-1">{children}</main>
           <SiteFooter />
           <CartSheet />
+          <SearchOverlay />
           <Toaster position="bottom-right" />
         </Providers>
       </body>

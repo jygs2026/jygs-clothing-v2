@@ -1,6 +1,6 @@
 "use client";
 
-import { Laptop, Menu, Moon, Sun } from "lucide-react";
+import { Laptop, Menu, Moon, Search, Sun } from "lucide-react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { useState } from "react";
@@ -13,6 +13,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { useMounted } from "@/hooks/use-mounted";
+import { useSearchStore } from "@/lib/search-store";
 import { cn } from "@/lib/utils";
 
 const LINKS = [
@@ -32,6 +33,7 @@ const THEME_OPTIONS = [
 export function MobileNav() {
   const [open, setOpen] = useState(false);
   const { theme, setTheme } = useTheme();
+  const openSearch = useSearchStore((s) => s.openSearch);
   const mounted = useMounted();
 
   return (
@@ -54,7 +56,19 @@ export function MobileNav() {
           </SheetDescription>
         </SheetHeader>
 
-        <nav className="mt-8 flex flex-col gap-1">
+        <button
+          type="button"
+          onClick={() => {
+            setOpen(false);
+            openSearch();
+          }}
+          className="mt-8 flex items-center gap-3 border-b border-border py-3.5 font-heading text-xl transition-colors hover:text-accent-2"
+        >
+          <Search className="size-4.5" strokeWidth={1.4} />
+          Search
+        </button>
+
+        <nav className="flex flex-col gap-1">
           {LINKS.map((link) => (
             <Link
               key={link.href}

@@ -51,11 +51,13 @@
 }
 
 :root {
-  --background: #f3f2f2;
+  /* The header bar's exact height — the search panel drops from its underside. */
+  --jygs-nav-h: 61px;
+  --background: #ffffff;
   --foreground: #201f1d;
   --card: #eae9e9;
   --card-foreground: #201f1d;
-  --popover: #f3f2f2;
+  --popover: #ffffff;
   --popover-foreground: #201f1d;
   --primary: #201f1d;
   --primary-foreground: #f3f2f2;
@@ -145,6 +147,39 @@
   }
   ::selection {
     background: color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+
+  /*
+   * Tailwind v4 resets buttons to the default arrow. Everything that acts
+   * like a control gets the hand back — including the ARIA roles Base UI
+   * puts on the div-based triggers (menus, selects, toggles) — and anything
+   * switched off says so instead.
+   */
+  button,
+  summary,
+  label[for],
+  a[href],
+  [role="button"],
+  [role="menuitem"],
+  [role="menuitemcheckbox"],
+  [role="menuitemradio"],
+  [role="option"],
+  [role="tab"],
+  [role="switch"],
+  [role="radio"],
+  [role="checkbox"],
+  [role="combobox"],
+  input[type="checkbox"],
+  input[type="radio"],
+  input[type="file"],
+  input[type="color"],
+  input[type="range"] {
+    cursor: pointer;
+  }
+  button:disabled,
+  [aria-disabled="true"],
+  [data-disabled] {
+    cursor: not-allowed;
   }
 }
 
