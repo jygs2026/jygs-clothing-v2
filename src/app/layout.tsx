@@ -1,11 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Lora } from "next/font/google";
 
-import { CartSheet } from "@/components/cart-sheet";
 import { Providers } from "@/components/providers";
-import { SearchOverlay } from "@/components/search-overlay";
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
 import { Toaster } from "@/components/ui/sonner";
 
 import "./globals.css";
@@ -28,6 +24,11 @@ export const metadata: Metadata = {
     "JYGS makes a short run twice a year — outerwear, knitwear and everyday weights in cloth we can name, cut once and then left alone.",
 };
 
+/**
+ * Only the document itself lives here. The shop's own furniture — header,
+ * footer, bag and search — belongs to the `(shop)` group, so the studio's
+ * admin can take the whole window without having to undo any of it.
+ */
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
@@ -35,13 +36,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
       className={`${heading.variable} ${body.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col overflow-x-hidden">
+      <body className="flex min-h-full flex-col overflow-x-hidden">
         <Providers>
-          <SiteHeader />
-          <main className="flex-1">{children}</main>
-          <SiteFooter />
-          <CartSheet />
-          <SearchOverlay />
+          {children}
           <Toaster position="bottom-right" />
         </Providers>
       </body>

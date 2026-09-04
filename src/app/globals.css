@@ -48,6 +48,19 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* The studio admin. Its rail is dark in both themes — see below. */
+  --font-admin: var(--font-admin-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-admin-mono: var(--admin-mono);
+  --color-admin-canvas: var(--admin-canvas);
+  --color-admin-surface: var(--admin-surface);
+  --color-admin-rail: var(--admin-rail);
+  --color-admin-rail-foreground: var(--admin-rail-foreground);
+  --color-admin-rail-muted: var(--admin-rail-muted);
+  --color-admin-rail-border: var(--admin-rail-border);
+  --color-admin-rail-hover: var(--admin-rail-hover);
+  --color-admin-rail-active: var(--admin-rail-active);
+  --color-admin-rail-accent: var(--admin-rail-accent);
 }
 
 :root {
@@ -87,6 +100,26 @@
   --sidebar-accent-foreground: #201f1d;
   --sidebar-border: color-mix(in srgb, #201f1d 16%, transparent);
   --sidebar-ring: #b68235;
+
+  /*
+   * The admin rail is deliberately dark whatever the theme: it is the one
+   * fixed edge of the studio's window, and a pale rail beside a pale table
+   * loses the boundary entirely. Only the canvas it sits against follows the
+   * theme, so these seven have no counterpart in `.dark`.
+   */
+  --admin-rail: #141312;
+  --admin-rail-foreground: #ece8e2;
+  --admin-rail-muted: color-mix(in srgb, #ece8e2 60%, transparent);
+  --admin-rail-border: color-mix(in srgb, #ece8e2 12%, transparent);
+  --admin-rail-hover: color-mix(in srgb, #ece8e2 7%, transparent);
+  --admin-rail-active: color-mix(in srgb, #d9a355 15%, transparent);
+  --admin-rail-accent: #d9a355;
+  /* The working surface, and the cards that sit up off it. */
+  --admin-canvas: #f5f4f2;
+  --admin-surface: #ffffff;
+  /* For SKUs, role codes and anything else meant to be read character by
+     character. The shop maps `font-mono` to its body serif. */
+  --admin-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 }
 
 .dark {
@@ -123,6 +156,9 @@
   --sidebar-accent-foreground: #ece8e2;
   --sidebar-border: color-mix(in srgb, #ece8e2 18%, transparent);
   --sidebar-ring: #d9a355;
+  /* A step lighter than the rail, so the rail's edge still reads. */
+  --admin-canvas: #1a1917;
+  --admin-surface: #232120;
 }
 
 @layer base {
@@ -147,6 +183,17 @@
   }
   ::selection {
     background: color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+
+  /*
+   * Headings above take the shop's serif. The studio is set in a sans, and a
+   * table's column headings and page titles have to match the rows under
+   * them — so the admin turns them back here, once, rather than tagging every
+   * heading it writes.
+   */
+  [data-admin] :is(h1, h2, h3, h4, h5, h6) {
+    font-family: var(--font-admin-sans), ui-sans-serif, system-ui, sans-serif;
+    letter-spacing: -0.015em;
   }
 
   /*
