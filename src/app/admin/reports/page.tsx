@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
-import { AdminPlaceholder } from "@/components/admin/admin-placeholder";
+import { ReportsScreen } from "@/components/admin/reports/reports-screen";
 
 export const metadata: Metadata = { title: "Reports" };
 
 export default function ReportsPage() {
-  return <AdminPlaceholder href="/admin/reports" />;
+  return <ReportsScreen />;
 }

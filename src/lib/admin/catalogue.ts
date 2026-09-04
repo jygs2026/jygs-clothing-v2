@@ -77,11 +77,19 @@ function skuFor(product: Product, index: number) {
 /** What is on the shelf, size by size. Deterministic — see `seeded`. */
 function stockFor(product: Product, index: number): StockRow[] {
   const random = seeded(index * 31 + product.name.length);
+
+  // How far through its run a piece is. A short run is not restocked, so at
+  // any moment most of the catalogue still has depth behind it and a handful
+  // are nearly gone — which is the whole reason the low-stock warning, the
+  // "needs cutting" list and the sold-out filter exist to be read.
+  const run = random();
+  const left = run > 0.86 ? 0.1 : run > 0.74 ? 0.35 : 1;
+
   return SIZES.map((size) => {
     if (product.out.includes(size)) return { size, onHand: 0, committed: 0 };
     // The middle sizes carry the depth; the ends are cut thin on purpose.
     const depth = size === "M" || size === "L" ? 1 : 0.45;
-    const onHand = Math.round(random() * 34 * depth);
+    const onHand = Math.round(random() * 34 * depth * left);
     return { size, onHand, committed: Math.min(onHand, Math.round(random() * 4)) };
   });
 }

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
-import { AdminPlaceholder } from "@/components/admin/admin-placeholder";
+import { SettingsScreen } from "@/components/admin/settings/settings-screen";
 
 export const metadata: Metadata = { title: "Settings" };
 
 export default function SettingsPage() {
-  return <AdminPlaceholder href="/admin/settings" />;
+  return <SettingsScreen />;
 }
