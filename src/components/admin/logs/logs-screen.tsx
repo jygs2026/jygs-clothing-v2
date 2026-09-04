@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { AdminPanel } from "@/components/admin/admin-panel";
 import { AdminStatCard } from "@/components/admin/admin-stat-card";
+import { AdminStatRow } from "@/components/admin/admin-stat-row";
 import { StatusPill } from "@/components/admin/status-pill";
 import { downloadCsv, toCsv, type Column } from "@/components/admin/table/columns";
 import { DataTable } from "@/components/admin/table/data-table";
@@ -179,7 +180,7 @@ export function LogsScreen() {
         </Button>
       </AdminPageHeader>
 
-      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+      <AdminStatRow>
         <AdminStatCard label="Entries" value={count(stats.total)} detail="Held in the log" />
         <AdminStatCard label="Last 24 hours" value={count(stats.today)} detail="Recent activity" />
         <AdminStatCard
@@ -196,7 +197,7 @@ export function LogsScreen() {
         />
         <AdminStatCard label="People" value={count(stats.actors)} detail="Acted in the studio" />
         <AdminStatCard label="Areas" value={count(stats.areas)} detail="Parts of the admin" />
-      </div>
+      </AdminStatRow>
 
       <AdminPanel className="mt-5">
         <TableToolbar table={table} placeholder="Search the log…" />

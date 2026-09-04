@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { AdminPanel } from "@/components/admin/admin-panel";
 import { AdminStatCard } from "@/components/admin/admin-stat-card";
+import { AdminStatRow } from "@/components/admin/admin-stat-row";
 import { StatusPill } from "@/components/admin/status-pill";
 import { downloadCsv, toCsv, type Column } from "@/components/admin/table/columns";
 import { DataTable } from "@/components/admin/table/data-table";
@@ -208,14 +209,14 @@ export function OrdersScreen() {
         </Button>
       </AdminPageHeader>
 
-      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+      <AdminStatRow>
         <AdminStatCard label="All orders" value={count(stats.total)} detail="Since the studio opened" />
         <AdminStatCard label="On the bench" value={count(stats.open)} tone="warning" detail="Placed, being cut or moving" />
         <AdminStatCard label="Delivered" value={count(stats.delivered)} tone="positive" detail={`${percent(stats.delivered, stats.total)} of all orders`} />
         <AdminStatCard label="Needs payment" value={count(stats.unpaid)} tone={stats.unpaid ? "warning" : "muted"} detail="Pending or failed" />
         <AdminStatCard label="Revenue" value={moneyShort(stats.revenue)} detail="Paid orders only" />
         <AdminStatCard label="Average order" value={money(stats.average)} detail="Across every order" />
-      </div>
+      </AdminStatRow>
 
       <AdminPanel className="mt-5">
         <TableToolbar table={table} placeholder="Search orders…" />

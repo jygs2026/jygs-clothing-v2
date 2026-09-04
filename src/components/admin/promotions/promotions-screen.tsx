@@ -1,13 +1,25 @@
 "use client";
 
-import { Copy, Download, MoreVertical, Pause, Play, Plus } from "lucide-react";
+import {
+  Copy,
+  Download,
+  Files,
+  MoreVertical,
+  Pause,
+  Pencil,
+  Play,
+  Plus,
+  Trash2,
+} from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { AdminPanel } from "@/components/admin/admin-panel";
 import { AdminStatCard } from "@/components/admin/admin-stat-card";
+import { AdminStatRow } from "@/components/admin/admin-stat-row";
+import { PromotionDialog } from "@/components/admin/promotions/promotion-dialog";
 import { StatusPill } from "@/components/admin/status-pill";
 import { downloadCsv, toCsv, type Column } from "@/components/admin/table/columns";
 import { DataTable } from "@/components/admin/table/data-table";
@@ -16,7 +28,6 @@ import { Button } from "@/components/ui/button";
 import { Menu, MenuContent, MenuItem, MenuTrigger } from "@/components/ui/menu";
 import { count, formatDate, money, percent } from "@/lib/admin/format";
 import {
-  ALL_PROMOTIONS,
   PROMOTION_KINDS,
   PROMOTION_STATES,
   PROMOTION_TONE,
@@ -24,27 +35,71 @@ import {
   stateOf,
   type Promotion,
 } from "@/lib/admin/promotions";
+import { usePromotionStore } from "@/lib/admin/promotions-store";
 import { byNumber, byText, searchAcross, useAdminTable } from "@/lib/admin/table";
 import { cn } from "@/lib/utils";
 
 export function PromotionsScreen() {
   const initialQuery = useSearchParams().get("q") ?? "";
 
+  const promotions = usePromotionStore((s) => s.promotions);
+  const duplicatePromotion = usePromotionStore((s) => s.duplicatePromotion);
+  const toggleActive = usePromotionStore((s) => s.toggleActive);
+  const removePromotions = usePromotionStore((s) => s.removePromotions);
+  const replacePromotions = usePromotionStore((s) => s.replacePromotions);
+
+  const [editing, setEditing] = useState<Promotion | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
+
+  function openForm(promotion: Promotion | null) {
+    setEditing(promotion);
+    setFormOpen(true);
+  }
+
+  function setRunning(rows: Promotion[], active: boolean) {
+    toggleActive(rows.map((row) => row.id), active);
+    table.clearSelection();
+    toast(
+      rows.length === 1
+        ? `${rows[0].code} ${active ? "resumed" : "paused"}.`
+        : `${rows.length} codes ${active ? "resumed" : "paused"}.`
+    );
+  }
+
+  function remove(rows: Promotion[]) {
+    const before = promotions;
+    const what = rows.length === 1 ? rows[0].code : `${rows.length} promotions`;
+    removePromotions(rows.map((row) => row.id));
+    table.clearSelection();
+    toast(`${what} removed.`, {
+      action: { label: "Undo", onClick: () => replacePromotions(before) },
+    });
+  }
+
+  function duplicate(row: Promotion) {
+    const copy = duplicatePromotion(row.id);
+    if (!copy) return;
+    toast(`${copy.code} created from ${row.code}.`, {
+      description: "Switched off, with its own count starting at zero.",
+      action: { label: "Edit", onClick: () => openForm(copy) },
+    });
+  }
+
   const stats = useMemo(() => {
-    const running = ALL_PROMOTIONS.filter((p) => stateOf(p) === "Running");
-    const redemptions = ALL_PROMOTIONS.reduce((sum, p) => sum + p.used, 0);
+    const running = promotions.filter((p) => stateOf(p) === "Running");
+    const redemptions = promotions.reduce((sum, p) => sum + p.used, 0);
     return {
-      total: ALL_PROMOTIONS.length,
+      total: promotions.length,
       running: running.length,
-      scheduled: ALL_PROMOTIONS.filter((p) => stateOf(p) === "Scheduled").length,
+      scheduled: promotions.filter((p) => stateOf(p) === "Scheduled").length,
       redemptions,
-      busiest: [...ALL_PROMOTIONS].sort((a, b) => b.used - a.used)[0],
-      capped: ALL_PROMOTIONS.filter((p) => p.limit && p.used >= p.limit * 0.8).length,
+      busiest: [...promotions].sort((a, b) => b.used - a.used)[0],
+      capped: promotions.filter((p) => p.limit && p.used >= p.limit * 0.8).length,
     };
-  }, []);
+  }, [promotions]);
 
   const table = useAdminTable<Promotion>({
-    rows: ALL_PROMOTIONS,
+    rows: promotions,
     id: (row) => row.id,
     initialQuery,
     search: useMemo(
@@ -191,21 +246,22 @@ export function PromotionsScreen() {
           <Download strokeWidth={1.7} />
           Export
         </Button>
-        <Button size="lg" onClick={() => toast("Creating a promotion is not wired up.")}>
+        <Button size="lg" onClick={() => openForm(null)}>
           <Plus strokeWidth={1.9} />
           Create promotion
         </Button>
       </AdminPageHeader>
 
-      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+      <AdminStatRow>
         <AdminStatCard label="All promotions" value={count(stats.total)} detail="Ever created" />
         <AdminStatCard label="Running" value={count(stats.running)} tone="positive" detail="Live right now" />
         <AdminStatCard label="Scheduled" value={count(stats.scheduled)} detail="Not started yet" />
         <AdminStatCard label="Redemptions" value={count(stats.redemptions)} detail="Across every code" />
         <AdminStatCard
           label="Busiest code"
-          value={stats.busiest.code}
-          detail={`${count(stats.busiest.used)} uses`}
+          value={stats.busiest?.code ?? "—"}
+          tone={stats.busiest ? "default" : "muted"}
+          detail={stats.busiest ? `${count(stats.busiest.used)} uses` : "Nothing created yet"}
         />
         <AdminStatCard
           label="Near their ceiling"
@@ -213,15 +269,35 @@ export function PromotionsScreen() {
           tone={stats.capped ? "warning" : "muted"}
           detail="80% of the limit used"
         />
-      </div>
+      </AdminStatRow>
 
       <AdminPanel className="mt-5">
-        <TableToolbar table={table} placeholder="Search promotions…" />
+        <TableToolbar
+          table={table}
+          placeholder="Search promotions…"
+          bulk={(rows) => (
+            <>
+              <Button variant="outline" size="sm" onClick={() => setRunning(rows, true)}>
+                <Play strokeWidth={1.7} />
+                Resume
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => setRunning(rows, false)}>
+                <Pause strokeWidth={1.7} />
+                Pause
+              </Button>
+              <Button variant="destructive" size="sm" onClick={() => remove(rows)}>
+                <Trash2 strokeWidth={1.7} />
+                Remove
+              </Button>
+            </>
+          )}
+        />
         <DataTable
           table={table}
           columns={columns}
           noun="promotions"
           empty="No promotions match that."
+          selectable
           card={{
             title: (row) => <span className="font-admin-mono">{row.code}</span>,
             subtitle: (row) => row.name,
@@ -252,15 +328,32 @@ export function PromotionsScreen() {
                   <Copy strokeWidth={1.5} />
                   Copy code
                 </MenuItem>
-                <MenuItem onClick={() => toast(`${row.code} — switching is not wired up.`)}>
+                <MenuItem onClick={() => openForm(row)}>
+                  <Pencil strokeWidth={1.5} />
+                  Edit promotion
+                </MenuItem>
+                <MenuItem onClick={() => setRunning([row], !row.active)}>
                   {row.active ? <Pause strokeWidth={1.5} /> : <Play strokeWidth={1.5} />}
                   {row.active ? "Pause" : "Resume"}
+                </MenuItem>
+                <MenuItem onClick={() => duplicate(row)}>
+                  <Files strokeWidth={1.5} />
+                  Duplicate
+                </MenuItem>
+                <MenuItem
+                  onClick={() => remove([row])}
+                  className="text-destructive data-highlighted:text-destructive"
+                >
+                  <Trash2 strokeWidth={1.5} />
+                  Remove
                 </MenuItem>
               </MenuContent>
             </Menu>
           )}
         />
       </AdminPanel>
+
+      <PromotionDialog open={formOpen} onOpenChange={setFormOpen} promotion={editing} />
 
       <p className="mt-3 text-[12px] leading-[18px] text-foreground/45">
         A promotion&rsquo;s state is worked out from its dates, its ceiling and whether it

@@ -56,7 +56,7 @@ export function AdminSidebar({
             type="button"
             onClick={() => closeDrawer(false)}
             aria-label="Close menu"
-            className="-mr-1.5 ml-auto flex size-8 items-center justify-center rounded-md text-admin-rail-muted transition-colors hover:bg-admin-rail-hover hover:text-admin-rail-foreground"
+            className="-mr-1.5 ml-auto flex size-9 items-center justify-center rounded-md text-admin-rail-muted transition-[background-color,color,transform] duration-(--admin-fast) ease-admin hover:bg-admin-rail-hover hover:text-admin-rail-foreground active:scale-90"
           >
             <X className="size-[18px]" strokeWidth={1.6} />
           </button>
@@ -84,22 +84,32 @@ export function AdminSidebar({
                   aria-current={current ? "page" : undefined}
                   title={collapsed ? label : undefined}
                   className={cn(
-                    "group relative flex items-center rounded-md text-[13.5px] transition-colors outline-none focus-visible:ring-3 focus-visible:ring-admin-rail-accent/50",
-                    collapsed
-                      ? "h-10 justify-center"
-                      : "h-10 gap-3 px-3",
+                    "group relative flex items-center rounded-md text-[13.5px] transition-[background-color,color,transform] duration-(--admin-fast) ease-admin outline-none focus-visible:ring-3 focus-visible:ring-admin-rail-accent/50 active:scale-[0.98]",
+                    // The drawer is driven by a thumb, the rail by a mouse.
+                    // 44px is the smallest target a thumb hits reliably.
+                    collapsed ? "h-10 justify-center" : "h-11 gap-3 px-3 lg:h-10",
                     current
                       ? "bg-admin-rail-active text-admin-rail-accent"
                       : "text-admin-rail-muted hover:bg-admin-rail-hover hover:text-admin-rail-foreground"
                   )}
                 >
-                  {current ? (
-                    <span
-                      aria-hidden="true"
-                      className="absolute inset-y-1.5 left-0 w-[2px] rounded-full bg-admin-rail-accent"
-                    />
-                  ) : null}
-                  <Icon className="size-[18px] shrink-0" strokeWidth={1.5} />
+                  {/*
+                   * Always drawn, and scaled away when the item is not the
+                   * current one — a mark that is mounted and unmounted cannot
+                   * be seen to move, and this way the accent slides up the
+                   * rail as you go down it.
+                   */}
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      "absolute inset-y-1.5 left-0 w-[2px] origin-center rounded-full bg-admin-rail-accent transition-transform duration-(--admin-medium) ease-admin-out",
+                      current ? "scale-y-100" : "scale-y-0"
+                    )}
+                  />
+                  <Icon
+                    className="size-[18px] shrink-0 transition-transform duration-(--admin-medium) ease-admin group-hover:scale-110"
+                    strokeWidth={1.5}
+                  />
                   <span className={cn(collapsed && "sr-only")}>{label}</span>
                 </Link>
               </li>
@@ -110,7 +120,7 @@ export function AdminSidebar({
 
       <div
         className={cn(
-          "shrink-0 border-t border-admin-rail-border",
+          "admin-safe-b shrink-0 border-t border-admin-rail-border",
           collapsed ? "p-2" : "p-3"
         )}
       >

@@ -35,14 +35,20 @@ export function AdminSectionTabs({
     .sort((a, b) => b.href.length - a.href.length)[0]?.href;
 
   return (
-    <div className="flex items-center gap-1 border-b border-border">
+    /*
+     * Scrolls sideways below `sm`. Four tabs at 360px either shrink their
+     * labels to nothing or wrap onto a second row that shifts the whole page
+     * down — and a tab strip that changes height as you move along it is
+     * worse than one you have to nudge.
+     */
+    <div className="admin-scroll-x admin-scroll-fade flex items-center gap-1 border-b border-border">
       {tabs.map(({ href, label, count }) => {
         const current = (active ?? fromPath) === href;
         const className = cn(
-          "-mb-px flex items-center gap-2 border-b-2 px-3.5 py-2.5 text-[13.5px] transition-colors",
+          "-mb-px flex shrink-0 items-center gap-2 border-b-2 px-3.5 py-3 text-[13.5px] transition-[color,border-color] duration-(--admin-medium) ease-admin sm:py-2.5",
           current
             ? "border-accent text-foreground"
-            : "border-transparent text-foreground/58 hover:text-foreground"
+            : "border-transparent text-foreground/58 hover:border-border hover:text-foreground"
         );
         const inner = (
           <>
@@ -50,7 +56,7 @@ export function AdminSectionTabs({
             {count === undefined ? null : (
               <span
                 className={cn(
-                  "rounded-4xl px-1.5 py-px text-[11px] font-feature-tnum",
+                  "rounded-4xl px-1.5 py-px text-[11px] transition-colors duration-(--admin-medium) ease-admin font-feature-tnum",
                   current ? "bg-accent/15 text-accent-2" : "bg-muted text-foreground/50"
                 )}
               >

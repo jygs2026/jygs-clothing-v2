@@ -206,7 +206,7 @@ export function RolesScreen() {
 
       <div className="mt-6 rounded-lg border border-border bg-admin-surface">
         <div className="hidden md:block">
-          <Table>
+          <Table containerClassName="admin-table-scroll">
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <Th className="pl-4">Role</Th>

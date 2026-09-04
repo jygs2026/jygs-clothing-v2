@@ -53,7 +53,25 @@ function DialogContent({
       <DialogPrimitive.Popup
         data-slot="dialog-content"
         className={cn(
-          "fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl bg-popover p-4 text-sm text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+          /*
+           * The dialog is capped and scrolls. Without this a form taller
+           * than the window is centred on it and clipped at *both* ends,
+           * with nothing to scroll — the fields past the fold, and the
+           * button that saves them, simply cannot be reached on a phone.
+           *
+           * `dvh` rather than `vh`: on mobile Safari `vh` is the height with
+           * the browser chrome retracted, which is taller than what is
+           * actually on screen, so a `vh` cap still hides the last rows.
+           */
+          "fixed z-50 flex max-h-[calc(100dvh-2rem)] w-full flex-col gap-4 overflow-y-auto overscroll-contain bg-popover p-4 text-sm text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none",
+          // Phones: a sheet on the bottom edge. It reaches further up the
+          // window than a centred box can, and it puts the form's controls
+          // where the thumb already is rather than in the middle of the
+          // screen.
+          "inset-x-0 bottom-0 max-h-[92dvh] rounded-t-xl pb-[max(1rem,env(safe-area-inset-bottom))] data-open:animate-in data-open:slide-in-from-bottom-8 data-closed:animate-out data-closed:slide-out-to-bottom-8",
+          // From `sm` up it is a centred dialog again.
+          "sm:inset-x-auto sm:top-1/2 sm:bottom-auto sm:left-1/2 sm:max-h-[calc(100dvh-4rem)] sm:max-w-sm sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-xl sm:pb-4 sm:data-open:slide-in-from-bottom-0 sm:data-open:zoom-in-95 sm:data-closed:slide-out-to-bottom-0 sm:data-closed:zoom-out-95",
+          "data-open:fade-in-0 data-closed:fade-out-0",
           className
         )}
         {...props}
@@ -65,7 +83,7 @@ function DialogContent({
             render={
               <Button
                 variant="ghost"
-                className="absolute top-2 right-2"
+                className="absolute top-2 right-2 size-9 sm:size-7"
                 size="icon-sm"
               />
             }
@@ -84,7 +102,8 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="dialog-header"
-      className={cn("flex flex-col gap-2", className)}
+      // `pr-8` keeps the title clear of the close button in the corner.
+      className={cn("flex flex-col gap-2 pr-8", className)}
       {...props}
     />
   )
@@ -102,7 +121,16 @@ function DialogFooter({
     <div
       data-slot="dialog-footer"
       className={cn(
-        "-mx-4 -mb-4 flex flex-col-reverse gap-2 rounded-b-xl border-t bg-muted/50 p-4 sm:flex-row sm:justify-end",
+        /*
+         * The footer bleeds to the dialog's edges. On a phone the sheet
+         * carries the home-indicator inset as bottom padding, so the footer
+         * has to pull past that too and take the inset onto its own padding
+         * — otherwise its tinted band stops short and leaves a strip of a
+         * different colour along the bottom of the screen.
+         */
+        "-mx-4 flex flex-col-reverse gap-2 rounded-b-xl border-t bg-muted/50 p-4",
+        "max-sm:-mb-[max(1rem,env(safe-area-inset-bottom))] max-sm:pb-[max(1rem,env(safe-area-inset-bottom))] max-sm:[&_[data-slot=button]]:h-11",
+        "sm:-mb-4 sm:flex-row sm:justify-end",
         className
       )}
       {...props}

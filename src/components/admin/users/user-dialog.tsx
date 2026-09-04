@@ -176,7 +176,7 @@ function UserForm({
             onChange={(event) => set("name", event.target.value)}
             aria-invalid={errors.name ? true : undefined}
             placeholder="Meera Iyer"
-            className="h-9"
+            className="h-10 sm:h-9"
           />
           <FieldError id="user-name-error" message={errors.name} />
         </div>
@@ -195,7 +195,7 @@ function UserForm({
               onChange={(event) => set("handle", event.target.value)}
               aria-invalid={errors.handle ? true : undefined}
               placeholder="meera.i"
-              className="h-9"
+              className="h-10 sm:h-9"
             />
             <FieldError id="user-handle-error" message={errors.handle} />
           </div>
@@ -214,7 +214,7 @@ function UserForm({
               onChange={(event) => set("email", event.target.value)}
               aria-invalid={errors.email ? true : undefined}
               placeholder="meera@jygs.in"
-              className="h-9"
+              className="h-10 sm:h-9"
             />
             <FieldError id="user-email-error" message={errors.email} />
           </div>
@@ -231,7 +231,7 @@ function UserForm({
                 label: role.name,
               }))}
             >
-              <SelectTrigger className="h-9 w-full">
+              <SelectTrigger size="field" className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -254,7 +254,7 @@ function UserForm({
                 label: status,
               }))}
             >
-              <SelectTrigger className="h-9 w-full">
+              <SelectTrigger size="field" className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

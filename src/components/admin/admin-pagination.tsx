@@ -20,6 +20,9 @@ function pagesFor(page: number, total: number): (number | "gap")[] {
   return out;
 }
 
+const STEP =
+  "flex size-9 items-center justify-center rounded-md border border-border text-foreground/65 transition-[background-color,color,transform] duration-(--admin-fast) ease-admin hover:bg-muted hover:text-foreground active:scale-95 disabled:pointer-events-none disabled:opacity-35 sm:size-8";
+
 export function AdminPagination({
   page,
   perPage,
@@ -41,27 +44,63 @@ export function AdminPagination({
   const last = Math.min(page * perPage, total);
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-4 border-t border-border px-4 py-3">
-      <p className="text-[12.5px] text-foreground/58">
-        {total === 0
-          ? `No ${noun}`
-          : `Showing ${first} to ${last} of ${total} ${noun}`}
-      </p>
+    <div className="admin-safe-b flex flex-col gap-3 border-t border-border px-4 py-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-4">
+      {/* On a phone the count and the page-size control share the lower
+          line; from `sm` up the count goes left and the control rejoins the
+          arrows on the right. */}
+      <div className="order-2 flex items-center justify-between gap-3 sm:order-none sm:contents">
+        <p className="text-[12.5px] text-foreground/58">
+          {total === 0
+            ? `No ${noun}`
+            : `Showing ${first} to ${last} of ${total} ${noun}`}
+        </p>
 
-      {/* Both halves wrap: at 390px a five-page run plus the per-page
-          select is a couple of pixels too wide to sit on one line. */}
-      <div className="flex flex-wrap items-center justify-end gap-2">
-        <nav aria-label="Pages" className="flex flex-wrap items-center justify-end gap-1">
-          <button
-            type="button"
-            onClick={() => onPage(page - 1)}
-            disabled={page <= 1}
-            aria-label="Previous page"
-            className="flex size-8 items-center justify-center rounded-md border border-border text-foreground/65 transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
-          >
-            <ChevronLeft className="size-4" strokeWidth={1.7} />
-          </button>
+        <Select
+          value={String(perPage)}
+          onValueChange={(value) => onPerPage(Number(value))}
+          items={PER_PAGE.map((n) => ({ value: String(n), label: `${n} / page` }))}
+        >
+          <SelectTrigger aria-label="Rows per page" className="h-8 sm:hidden">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {PER_PAGE.map((n) => (
+              <SelectItem key={n} value={String(n)}>
+                {n} / page
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
+      <div className="order-1 flex items-center justify-between gap-2 sm:order-none sm:justify-end">
+        {/*
+         * A phone gets two arrows and its place in the run. A five-page
+         * numbered strip at 390px either wraps onto a second line or shrinks
+         * every target below the thumb — and nobody jumps to page 6 of 9 on a
+         * phone anyway; they page through it.
+         */}
+        <button
+          type="button"
+          onClick={() => onPage(page - 1)}
+          disabled={page <= 1}
+          aria-label="Previous page"
+          className={STEP}
+        >
+          <ChevronLeft className="size-4" strokeWidth={1.7} />
+        </button>
+
+        <p
+          aria-live="polite"
+          className="text-[13px] text-foreground/70 font-feature-tnum sm:hidden"
+        >
+          Page {page} of {pages}
+        </p>
+
+        <nav
+          aria-label="Pages"
+          className="hidden items-center gap-1 sm:flex"
+        >
           {pagesFor(page, pages).map((entry, i) =>
             entry === "gap" ? (
               <span key={`gap-${i}`} aria-hidden="true" className="px-1 text-foreground/40">
@@ -75,34 +114,34 @@ export function AdminPagination({
                 aria-label={`Page ${entry}`}
                 aria-current={entry === page ? "page" : undefined}
                 className={cn(
-                  "flex size-8 items-center justify-center rounded-md border text-[13px] transition-colors font-feature-tnum",
+                  "flex size-8 items-center justify-center rounded-md border text-[13px] transition-[background-color,color,border-color,transform] duration-(--admin-fast) ease-admin font-feature-tnum active:scale-95",
                   entry === page
                     ? "border-primary bg-primary text-primary-foreground"
-                    : "border-border text-foreground/70 hover:bg-muted"
+                    : "border-border text-foreground/70 hover:bg-muted hover:text-foreground"
                 )}
               >
                 {entry}
               </button>
             )
           )}
-
-          <button
-            type="button"
-            onClick={() => onPage(page + 1)}
-            disabled={page >= pages}
-            aria-label="Next page"
-            className="flex size-8 items-center justify-center rounded-md border border-border text-foreground/65 transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
-          >
-            <ChevronRight className="size-4" strokeWidth={1.7} />
-          </button>
         </nav>
+
+        <button
+          type="button"
+          onClick={() => onPage(page + 1)}
+          disabled={page >= pages}
+          aria-label="Next page"
+          className={STEP}
+        >
+          <ChevronRight className="size-4" strokeWidth={1.7} />
+        </button>
 
         <Select
           value={String(perPage)}
           onValueChange={(value) => onPerPage(Number(value))}
           items={PER_PAGE.map((n) => ({ value: String(n), label: `${n} / page` }))}
         >
-          <SelectTrigger aria-label="Rows per page" className="h-8">
+          <SelectTrigger aria-label="Rows per page" className="hidden h-8 sm:flex">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

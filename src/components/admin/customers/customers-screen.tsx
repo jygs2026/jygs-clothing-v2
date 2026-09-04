@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { AdminPanel } from "@/components/admin/admin-panel";
 import { AdminStatCard } from "@/components/admin/admin-stat-card";
+import { AdminStatRow } from "@/components/admin/admin-stat-row";
 import { CustomerDialog } from "@/components/admin/customers/customer-dialog";
 import { GroupPill } from "@/components/admin/customers/group-pill";
 import { StatusMark } from "@/components/admin/status-pill";
@@ -224,14 +225,14 @@ export function CustomersScreen() {
         </Button>
       </AdminPageHeader>
 
-      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+      <AdminStatRow>
         <AdminStatCard label="Total customers" value={count(stats.total)} detail="Everyone on file" />
         <AdminStatCard label="New" value={count(stats.fresh)} tone="positive" detail="Joined in the last 30 days" />
         <AdminStatCard label="With orders" value={count(stats.withOrders)} detail={`${percent(stats.withOrders, stats.total)} of the book`} />
         <AdminStatCard label="Repeat" value={count(stats.repeat)} detail={`${percent(stats.repeat, stats.total)} came back`} />
         <AdminStatCard label="Average order" value={money(stats.averageOrder)} detail="Across every order placed" />
         <AdminStatCard label="Total spent" value={moneyShort(stats.spent)} detail="All time" />
-      </div>
+      </AdminStatRow>
 
       <AdminPanel className="mt-5">
         <TableToolbar
@@ -274,7 +275,8 @@ export function CustomersScreen() {
                 </StatusMark>
               </>
             ),
-            fields: ["orders", "spent", "email", "phone", "joined"],
+            metric: (row) => ({ value: money(row.spent), label: "Spent" }),
+            fields: ["orders", "email", "phone", "joined"],
             wide: ["email"],
           }}
           actions={(row) => (

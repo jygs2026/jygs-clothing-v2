@@ -209,7 +209,7 @@ function CustomerForm({
             onValueChange={(value) => set("status", value as CustomerStatus)}
             items={STATUSES.map((status) => ({ value: status, label: status }))}
           >
-            <SelectTrigger className="h-9 w-full">
+            <SelectTrigger size="field" className="w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -259,7 +259,7 @@ function Field({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         aria-invalid={error ? true : undefined}
-        className="h-9"
+        className="h-10 sm:h-9"
         {...props}
       />
       <FieldError id={`${id}-error`} message={error} />

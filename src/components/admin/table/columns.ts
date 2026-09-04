@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import type { Tone } from "@/components/admin/status-pill";
+
 /**
  * One column, described once and rendered three ways: as a table cell on a
  * wide screen, as a labelled field on a card below `md`, and as a CSV value
@@ -29,6 +31,9 @@ export type CardShape<T> = {
   title: (row: T) => ReactNode;
   subtitle?: (row: T) => ReactNode;
   badges?: (row: T) => ReactNode;
+  /** The figure the card leads on. Keep it out of `fields` — showing it
+   *  twice is what made every card look the same as every other. */
+  metric?: (row: T) => { label?: string; value: ReactNode; tone?: Tone };
   /** Column keys, in card order. */
   fields: string[];
   /** Column keys that should take the card's full width — prose, mostly. */

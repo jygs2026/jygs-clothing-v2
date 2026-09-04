@@ -8,6 +8,7 @@ import {
   ScrollText,
   Settings,
   Shirt,
+  Store,
   Tags,
   Undo2,
   UserCog,
@@ -120,6 +121,40 @@ export const ADMIN_NAV: AdminNavItem[] = [
     icon: ScrollText,
     blurb: "A plain record of what changed in the studio, by whom and when.",
   },
+];
+
+export type AdminTab = {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+  /**
+   * Leaves the studio. Such a tab is never lit as the current section — it
+   * is somewhere to go, not somewhere you are.
+   */
+  leavesAdmin?: boolean;
+};
+
+/** Pulls a tab's label and icon from the nav, so the two cannot drift apart. */
+function tabFor(href: string): AdminTab {
+  const item = ADMIN_NAV.find((entry) => entry.href === href);
+  if (!item) throw new Error(`ADMIN_TABS names ${href}, which is not in ADMIN_NAV`);
+  return { href: item.href, label: item.label, icon: item.icon };
+}
+
+/**
+ * The phone's bottom bar. Five places, no overflow entry: thirteen links do
+ * not fit across 360px, and the side menu already reaches every one of them,
+ * so a sixth tab that only opens that menu would be a tab spent on nothing.
+ *
+ * The shop sits in the middle because it is the one tab that is not a
+ * section of the studio — it is the way out to what customers see.
+ */
+export const ADMIN_TABS: AdminTab[] = [
+  tabFor("/admin"),
+  tabFor("/admin/products"),
+  { href: "/", label: "Shop Mode", icon: Store, leavesAdmin: true },
+  tabFor("/admin/promotions"),
+  tabFor("/admin/reports"),
 ];
 
 /**

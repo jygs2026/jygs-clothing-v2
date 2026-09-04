@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 
 import { AdminPanel, AdminPanelHeader } from "@/components/admin/admin-panel";
 import { AdminStatCard } from "@/components/admin/admin-stat-card";
+import { AdminStatRow } from "@/components/admin/admin-stat-row";
 import { StatusPill } from "@/components/admin/status-pill";
 import { UserAvatar } from "@/components/admin/user-avatar";
 import { Button } from "@/components/ui/button";
@@ -77,7 +78,7 @@ export function OrderDetail() {
         </Button>
       </header>
 
-      <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <AdminStatRow cols={4}>
         <AdminStatCard
           label="Items"
           value={order.items}
@@ -94,14 +95,14 @@ export function OrderDetail() {
           value={money(order.total)}
           detail={`Includes ${money(tax)} tax`}
         />
-      </div>
+      </AdminStatRow>
 
       <div className="mt-5 grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,300px)]">
         <AdminPanel>
           <AdminPanelHeader title="What was in the box" detail={`${order.items} pieces`} />
 
           <div className="hidden md:block">
-            <Table>
+            <Table containerClassName="admin-table-scroll">
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
                   <Th className="pl-5">Piece</Th>
@@ -204,7 +205,7 @@ function Back() {
   return (
     <Link
       href="/admin/orders"
-      className="inline-flex items-center gap-1.5 text-[12.5px] text-foreground/55 transition-colors hover:text-accent-2"
+      className="-mx-2 inline-flex h-9 items-center gap-1.5 rounded-md px-2 text-[12.5px] text-foreground/55 transition-colors duration-(--admin-fast) hover:bg-muted hover:text-accent-2 sm:mx-0 sm:h-auto sm:px-0 sm:hover:bg-transparent"
     >
       <ChevronLeft className="size-3.5" strokeWidth={1.7} />
       Orders
@@ -252,7 +253,7 @@ function Detail({
     <div className="flex items-start gap-3">
       <Icon className="mt-0.5 size-4 shrink-0 text-foreground/40" strokeWidth={1.6} />
       <div className="min-w-0">
-        <dt className="text-[10.5px] tracking-[0.08em] text-foreground/45 uppercase">
+        <dt className="text-[11px] tracking-[0.08em] text-foreground/45 uppercase">
           {label}
         </dt>
         <dd className="mt-0.5 text-[13.5px] text-foreground/80">{children}</dd>

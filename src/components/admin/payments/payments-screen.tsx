@@ -10,6 +10,7 @@ import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { AdminPanel } from "@/components/admin/admin-panel";
 import { AdminSectionTabs } from "@/components/admin/admin-section-tabs";
 import { AdminStatCard } from "@/components/admin/admin-stat-card";
+import { AdminStatRow } from "@/components/admin/admin-stat-row";
 import { StatusPill } from "@/components/admin/status-pill";
 import { downloadCsv, toCsv, type Column } from "@/components/admin/table/columns";
 import { DataTable } from "@/components/admin/table/data-table";
@@ -62,7 +63,7 @@ export function PaymentsScreen() {
         blurb="Takings, refunds and payouts, reconciled against what the orders say."
       />
 
-      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+      <AdminStatRow>
         <AdminStatCard label="Taken" value={moneyShort(stats.gross)} detail={`${count(stats.captured)} captured payments`} />
         <AdminStatCard label="Gateway fees" value={moneyShort(stats.fees)} tone="warning" detail={`${percent(stats.fees, stats.gross)} of takings`} />
         <AdminStatCard label="Refunded" value={moneyShort(stats.refunded)} detail="Given back" />
@@ -79,7 +80,7 @@ export function PaymentsScreen() {
           tone={stats.failed ? "warning" : "muted"}
           detail="Worth chasing"
         />
-      </div>
+      </AdminStatRow>
 
       <div className="mt-6">
         <AdminSectionTabs
@@ -240,6 +241,7 @@ function PaymentsTable({ initialQuery }: { initialQuery: string }) {
         <Button
           variant="outline"
           size="sm"
+          className="h-9 sm:h-7"
           onClick={() => {
             downloadCsv("jygs-payments.csv", toCsv(columns, table.matched));
             toast(`${table.total} payments exported.`);
@@ -359,6 +361,7 @@ function PayoutsTable() {
         <Button
           variant="outline"
           size="sm"
+          className="h-9 sm:h-7"
           onClick={() => {
             downloadCsv("jygs-payouts.csv", toCsv(columns, table.matched));
             toast(`${table.total} payouts exported.`);

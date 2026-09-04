@@ -1,14 +1,26 @@
 "use client";
 
-import { Download, Eye, MoreVertical, Pencil, Plus } from "lucide-react";
+import {
+  Archive,
+  Copy,
+  Download,
+  Eye,
+  MoreVertical,
+  Package,
+  Pencil,
+  Plus,
+  Trash2,
+} from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { AdminPanel } from "@/components/admin/admin-panel";
 import { AdminStatCard } from "@/components/admin/admin-stat-card";
+import { AdminStatRow } from "@/components/admin/admin-stat-row";
+import { ProductDialog } from "@/components/admin/products/product-dialog";
 import { ProductThumb } from "@/components/admin/products/product-thumb";
 import { StatusMark, StatusPill } from "@/components/admin/status-pill";
 import { downloadCsv, toCsv, type Column } from "@/components/admin/table/columns";
@@ -23,15 +35,16 @@ import {
   MenuTrigger,
 } from "@/components/ui/menu";
 import {
-  CATALOGUE,
   CATEGORIES,
   PRODUCT_STATUSES,
   STOCK_LEVELS,
   available,
   stockLevel,
   type CatalogueItem,
+  type ProductStatus,
 } from "@/lib/admin/catalogue";
-import { count, formatDate, money, percent } from "@/lib/admin/format";
+import { useCatalogueStore } from "@/lib/admin/catalogue-store";
+import { count, formatDate, money, moneyShort, percent } from "@/lib/admin/format";
 import { byNumber, byText, searchAcross, useAdminTable } from "@/lib/admin/table";
 
 /** One vocabulary for how full a shelf is, shared with Inventory. */
@@ -50,20 +63,66 @@ const STATUS_TONE = {
 export function ProductsScreen() {
   const initialQuery = useSearchParams().get("q") ?? "";
 
+  const items = useCatalogueStore((s) => s.items);
+  const duplicateProduct = useCatalogueStore((s) => s.duplicateProduct);
+  const setStatus = useCatalogueStore((s) => s.setStatus);
+  const removeProducts = useCatalogueStore((s) => s.removeProducts);
+  const replaceProducts = useCatalogueStore((s) => s.replaceProducts);
+
+  // `null` opens the form empty; an item opens it on that piece. `false`
+  // keeps it shut — three states in two variables so the dialog can animate
+  // out still showing what it was editing.
+  const [editing, setEditing] = useState<CatalogueItem | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
+
+  function openForm(product: CatalogueItem | null) {
+    setEditing(product);
+    setFormOpen(true);
+  }
+
+  function markStatus(rows: CatalogueItem[], status: ProductStatus) {
+    setStatus(rows.map((row) => row.id), status);
+    table.clearSelection();
+    toast(
+      rows.length === 1
+        ? `${rows[0].name} is now ${status.toLowerCase()}.`
+        : `${rows.length} products are now ${status.toLowerCase()}.`
+    );
+  }
+
+  function remove(rows: CatalogueItem[]) {
+    const before = items;
+    const what = rows.length === 1 ? rows[0].name : `${rows.length} products`;
+    removeProducts(rows.map((row) => row.id));
+    table.clearSelection();
+    toast(`${what} removed.`, {
+      action: { label: "Undo", onClick: () => replaceProducts(before) },
+    });
+  }
+
+  function duplicate(row: CatalogueItem) {
+    const copy = duplicateProduct(row.id);
+    if (!copy) return;
+    toast(`${copy.name} created as a draft.`, {
+      description: `Given the code ${copy.sku}, with an empty shelf.`,
+      action: { label: "Edit", onClick: () => openForm(copy) },
+    });
+  }
+
   const stats = useMemo(() => {
-    const active = CATALOGUE.filter((item) => item.status === "Active");
+    const active = items.filter((item) => item.status === "Active");
     return {
-      total: CATALOGUE.length,
+      total: items.length,
       active: active.length,
-      out: CATALOGUE.filter((item) => stockLevel(item) === "Out of stock").length,
-      low: CATALOGUE.filter((item) => stockLevel(item) === "Low stock").length,
-      draft: CATALOGUE.filter((item) => item.status === "Draft").length,
-      shelf: CATALOGUE.reduce((sum, item) => sum + available(item) * item.price, 0),
+      out: items.filter((item) => stockLevel(item) === "Out of stock").length,
+      low: items.filter((item) => stockLevel(item) === "Low stock").length,
+      draft: items.filter((item) => item.status === "Draft").length,
+      shelf: items.reduce((sum, item) => sum + available(item) * item.price, 0),
     };
-  }, []);
+  }, [items]);
 
   const table = useAdminTable<CatalogueItem>({
-    rows: CATALOGUE,
+    rows: items,
     id: (row) => row.id,
     initialQuery,
     search: useMemo(
@@ -221,20 +280,13 @@ export function ProductsScreen() {
           <Download strokeWidth={1.7} />
           Export
         </Button>
-        <Button
-          size="lg"
-          onClick={() =>
-            toast("Adding a piece is not wired up.", {
-              description: "The catalogue is read from the shop's own product data.",
-            })
-          }
-        >
+        <Button size="lg" onClick={() => openForm(null)}>
           <Plus strokeWidth={1.9} />
           Add product
         </Button>
       </AdminPageHeader>
 
-      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+      <AdminStatRow>
         <AdminStatCard label="All products" value={count(stats.total)} detail="In the catalogue" />
         <AdminStatCard
           label="Active"
@@ -257,21 +309,43 @@ export function ProductsScreen() {
         <AdminStatCard label="Draft" value={count(stats.draft)} tone="muted" detail="Not published" />
         <AdminStatCard
           label="On the shelf"
-          value={money(stats.shelf)}
+          value={moneyShort(stats.shelf)}
           detail="Retail value of stock"
         />
-      </div>
+      </AdminStatRow>
 
       <AdminPanel className="mt-5">
-        <TableToolbar table={table} placeholder="Search products…" />
+        <TableToolbar
+          table={table}
+          placeholder="Search products…"
+          bulk={(rows) => (
+            <>
+              <Button variant="outline" size="sm" onClick={() => markStatus(rows, "Active")}>
+                <Package strokeWidth={1.7} />
+                Publish
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => markStatus(rows, "Archived")}>
+                <Archive strokeWidth={1.7} />
+                Archive
+              </Button>
+              <Button variant="destructive" size="sm" onClick={() => remove(rows)}>
+                <Trash2 strokeWidth={1.7} />
+                Remove
+              </Button>
+            </>
+          )}
+        />
         <DataTable
           table={table}
           columns={columns}
           noun="products"
           empty="No pieces match that. Try a different category or stock level."
+          selectable
           rowHref={(row) => `/admin/products/${row.id}`}
           card={{
-            lead: (row) => <ProductThumb item={row} />,
+            // A catalogue is looked at before it is read: the photograph
+            // earns more room here than any column could give it.
+            lead: (row) => <ProductThumb item={row} className="size-14 rounded-lg" />,
             title: (row) => row.name,
             subtitle: (row) => <span className="font-admin-mono">{row.sku}</span>,
             badges: (row) => (
@@ -280,7 +354,8 @@ export function ProductsScreen() {
                 <StatusMark tone={STOCK_TONE[stockLevel(row)]}>{stockLevel(row)}</StatusMark>
               </>
             ),
-            fields: ["price", "stock", "category", "updated"],
+            metric: (row) => ({ value: money(row.price), label: "Price" }),
+            fields: ["stock", "category", "updated"],
           }}
           actions={(row) => (
             <>
@@ -303,13 +378,35 @@ export function ProductsScreen() {
                     <Eye strokeWidth={1.5} />
                     Open product
                   </MenuLinkItem>
-                  <MenuLinkItem render={<Link href={`/admin/inventory?q=${row.sku}`} />}>
-                    <Pencil strokeWidth={1.5} />
-                    Adjust stock
-                  </MenuLinkItem>
-                  <MenuItem onClick={() => toast(`${row.name} is read from the shop's catalogue.`)}>
+                  <MenuItem onClick={() => openForm(row)}>
                     <Pencil strokeWidth={1.5} />
                     Edit product
+                  </MenuItem>
+                  <MenuLinkItem render={<Link href={`/admin/inventory?q=${row.sku}`} />}>
+                    <Package strokeWidth={1.5} />
+                    Adjust stock
+                  </MenuLinkItem>
+                  <MenuItem onClick={() => duplicate(row)}>
+                    <Copy strokeWidth={1.5} />
+                    Duplicate
+                  </MenuItem>
+                  {row.status === "Archived" ? (
+                    <MenuItem onClick={() => markStatus([row], "Active")}>
+                      <Package strokeWidth={1.5} />
+                      Publish
+                    </MenuItem>
+                  ) : (
+                    <MenuItem onClick={() => markStatus([row], "Archived")}>
+                      <Archive strokeWidth={1.5} />
+                      Archive
+                    </MenuItem>
+                  )}
+                  <MenuItem
+                    onClick={() => remove([row])}
+                    className="text-destructive data-highlighted:text-destructive"
+                  >
+                    <Trash2 strokeWidth={1.5} />
+                    Remove
                   </MenuItem>
                 </MenuContent>
               </Menu>
@@ -317,6 +414,8 @@ export function ProductsScreen() {
           )}
         />
       </AdminPanel>
+
+      <ProductDialog open={formOpen} onOpenChange={setFormOpen} product={editing} />
     </div>
   );
 }

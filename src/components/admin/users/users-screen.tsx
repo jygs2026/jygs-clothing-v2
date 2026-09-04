@@ -20,6 +20,7 @@ import { AdminCard, AdminCardList } from "@/components/admin/admin-card-list";
 import { AdminPagination } from "@/components/admin/admin-pagination";
 import { AdminSectionTabs } from "@/components/admin/admin-section-tabs";
 import { AdminStatCard } from "@/components/admin/admin-stat-card";
+import { AdminStatRow } from "@/components/admin/admin-stat-row";
 import { RolePill } from "@/components/admin/role-pill";
 import { StatusDot } from "@/components/admin/status-dot";
 import { UserAvatar } from "@/components/admin/user-avatar";
@@ -299,7 +300,7 @@ export function UsersScreen() {
         />
       </div>
 
-      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+      <AdminStatRow>
         <AdminStatCard
           label="Total users"
           value={users.length}
@@ -333,7 +334,7 @@ export function UsersScreen() {
           value={stats.viewers}
           detail="Read-only, nothing they can change"
         />
-      </div>
+      </AdminStatRow>
 
       <div className="mt-5 rounded-lg border border-border bg-admin-surface">
         {selected.length > 0 ? (
@@ -363,8 +364,10 @@ export function UsersScreen() {
             </Button>
           </div>
         ) : (
-          <div className="flex flex-wrap items-center gap-2.5 border-b border-border px-4 py-3">
-            <div className="relative min-w-[200px] flex-1 sm:max-w-[280px]">
+          /* Same shape as the shared TableToolbar: search on its own line
+             below `sm`, filters on a line that scrolls rather than wraps. */
+          <div className="flex flex-col gap-2.5 border-b border-border px-4 py-3 sm:flex-row sm:flex-wrap sm:items-center">
+            <div className="relative w-full sm:w-auto sm:min-w-[200px] sm:flex-1 sm:max-w-[280px]">
               <Search
                 aria-hidden="true"
                 className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-foreground/40"
@@ -379,47 +382,50 @@ export function UsersScreen() {
                 }}
                 aria-label="Search users"
                 placeholder="Search users…"
-                className="h-8 w-full rounded-md border border-border bg-transparent pr-2.5 pl-8 text-[13px] outline-none transition-colors placeholder:text-foreground/40 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/40 [&::-webkit-search-cancel-button]:hidden"
+                // 16px on a phone, or iOS zooms the page in on focus.
+                className="h-9 w-full rounded-md border border-border bg-transparent pr-2.5 pl-8 text-[16px] outline-none transition-[border-color,box-shadow] duration-(--admin-fast) ease-admin placeholder:text-foreground/40 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/40 sm:h-8 sm:text-[13px] [&::-webkit-search-cancel-button]:hidden"
               />
             </div>
 
-            <Filter
-              label="All roles"
-              value={role}
-              onChange={(value) => {
-                setRole(value);
-                resetPage();
-              }}
-              options={roles.map((r) => ({ value: r.code, label: r.name }))}
-            />
-            <Filter
-              label="All statuses"
-              value={status}
-              onChange={(value) => {
-                setStatusFilter(value);
-                resetPage();
-              }}
-              options={STATUSES.map((s) => ({ value: s, label: s }))}
-            />
+            <div className="admin-scroll-x admin-scroll-fade -mx-4 flex items-center gap-2 px-4 max-sm:pb-0.5 sm:mx-0 sm:contents sm:px-0">
+              <Filter
+                label="All roles"
+                value={role}
+                onChange={(value) => {
+                  setRole(value);
+                  resetPage();
+                }}
+                options={roles.map((r) => ({ value: r.code, label: r.name }))}
+              />
+              <Filter
+                label="All statuses"
+                value={status}
+                onChange={(value) => {
+                  setStatusFilter(value);
+                  resetPage();
+                }}
+                options={STATUSES.map((s) => ({ value: s, label: s }))}
+              />
 
-            <div className="ml-auto flex items-center gap-2">
-              <Select
-                value={sort}
-                onValueChange={(value) => setSort(value as Sort)}
-                items={SORTS}
-              >
-                <SelectTrigger aria-label="Sort users" className="h-8">
-                  <span className="text-foreground/50">Sort:</span>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {SORTS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="flex shrink-0 items-center gap-2 sm:ml-auto">
+                <Select
+                  value={sort}
+                  onValueChange={(value) => setSort(value as Sort)}
+                  items={SORTS}
+                >
+                  <SelectTrigger aria-label="Sort users" className="h-9 sm:h-8">
+                    <span className="text-foreground/50">Sort:</span>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SORTS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
         )}
@@ -427,7 +433,7 @@ export function UsersScreen() {
         {/* Wide enough for columns: the table. Narrower: the same page of
             rows as cards, so nothing scrolls off to the right. */}
         <div className="hidden md:block">
-          <Table>
+          <Table containerClassName="admin-table-scroll">
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead className="w-10 pl-4">

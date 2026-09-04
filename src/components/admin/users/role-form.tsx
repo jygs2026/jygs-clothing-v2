@@ -135,7 +135,10 @@ export function RoleForm({ role }: { role?: AdminRole }) {
       className="mx-auto max-w-[1240px] px-4 py-7 sm:px-6 sm:py-9"
     >
       <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[12.5px]">
-        <Link href="/admin/users/roles" className="text-foreground/55 hover:text-accent-2">
+        <Link
+          href="/admin/users/roles"
+          className="-mx-2 flex h-9 items-center rounded-md px-2 text-foreground/55 transition-colors duration-(--admin-fast) hover:bg-muted hover:text-accent-2 sm:mx-0 sm:h-auto sm:px-0 sm:hover:bg-transparent"
+        >
           Roles
         </Link>
         <ChevronRight className="size-3.5 text-foreground/35" strokeWidth={1.7} />
@@ -235,13 +238,13 @@ export function RoleForm({ role }: { role?: AdminRole }) {
                 {granted.length} of {ALL_PERMISSIONS.length} granted
               </p>
             </div>
-            <div className="flex items-center gap-1.5 text-[12.5px]">
+            <div className="flex items-center gap-1 text-[12.5px]">
               <span className="text-foreground/50">Select:</span>
               <button
                 type="button"
                 disabled={locked}
                 onClick={() => setGranted(ALL_PERMISSIONS)}
-                className="rounded-[3px] px-1 text-accent-2 hover:underline disabled:pointer-events-none disabled:opacity-45"
+                className="flex h-9 items-center rounded-md px-2.5 text-accent-2 transition-colors duration-(--admin-fast) hover:bg-muted hover:underline disabled:pointer-events-none disabled:opacity-45 sm:h-7"
               >
                 All
               </button>
@@ -252,7 +255,7 @@ export function RoleForm({ role }: { role?: AdminRole }) {
                 type="button"
                 disabled={locked}
                 onClick={() => setGranted([])}
-                className="rounded-[3px] px-1 text-accent-2 hover:underline disabled:pointer-events-none disabled:opacity-45"
+                className="flex h-9 items-center rounded-md px-2.5 text-accent-2 transition-colors duration-(--admin-fast) hover:bg-muted hover:underline disabled:pointer-events-none disabled:opacity-45 sm:h-7"
               >
                 None
               </button>
@@ -284,7 +287,7 @@ export function RoleForm({ role }: { role?: AdminRole }) {
                     )
                   }
                 >
-                  <div className="flex items-center gap-3 px-5 py-2.5">
+                  <div className="flex items-center gap-3 px-4 py-1.5 sm:px-5 sm:py-2.5">
                     <Checkbox
                       checked={all}
                       indeterminate={some}
@@ -292,7 +295,7 @@ export function RoleForm({ role }: { role?: AdminRole }) {
                       onCheckedChange={() => toggleModule(module.key, keys, all)}
                       aria-label={`Every permission on ${module.label}`}
                     />
-                    <CollapsibleTrigger className="flex flex-1 items-center gap-2 rounded-[3px] text-left outline-none focus-visible:ring-3 focus-visible:ring-ring/50">
+                    <CollapsibleTrigger className="flex h-11 flex-1 items-center gap-2 rounded-md text-left outline-none transition-colors duration-(--admin-fast) hover:bg-muted/50 focus-visible:ring-3 focus-visible:ring-ring/50 sm:h-7 sm:hover:bg-transparent">
                       <span className="text-[13.5px] font-medium">{module.label}</span>
                       <span
                         className={cn(
@@ -314,12 +317,13 @@ export function RoleForm({ role }: { role?: AdminRole }) {
                   </div>
 
                   <CollapsibleContent className="overflow-hidden">
-                    <div className="grid gap-y-1 pb-3 pl-[3.25rem] sm:grid-cols-2">
+                    <div className="grid gap-y-0.5 pb-3 pl-12 sm:grid-cols-2 sm:pl-[3.25rem]">
                       {module.actions.map((action) => (
                         <label
                           key={action.key}
                           className={cn(
-                            "flex items-center gap-2.5 py-1 pr-5 text-[13px]",
+                            // The whole line is the target, not just the box.
+                            "flex min-h-10 items-center gap-2.5 rounded-md pr-4 text-[13px] sm:min-h-0 sm:py-1 sm:pr-5",
                             locked ? "text-foreground/55" : "text-foreground/80"
                           )}
                         >

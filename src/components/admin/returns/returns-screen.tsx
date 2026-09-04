@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { AdminPanel } from "@/components/admin/admin-panel";
 import { AdminStatCard } from "@/components/admin/admin-stat-card";
+import { AdminStatRow } from "@/components/admin/admin-stat-row";
 import { StatusPill } from "@/components/admin/status-pill";
 import { downloadCsv, toCsv, type Column } from "@/components/admin/table/columns";
 import { DataTable } from "@/components/admin/table/data-table";
@@ -229,7 +230,7 @@ export function ReturnsScreen() {
         </Button>
       </AdminPageHeader>
 
-      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+      <AdminStatRow>
         <AdminStatCard label="All returns" value={count(stats.total)} detail="Since the studio opened" />
         <AdminStatCard
           label="Still open"
@@ -251,7 +252,7 @@ export function ReturnsScreen() {
           tone="positive"
           detail="Can go back on the shelf"
         />
-      </div>
+      </AdminStatRow>
 
       <AdminPanel className="mt-5">
         <TableToolbar table={table} placeholder="Search returns…" />

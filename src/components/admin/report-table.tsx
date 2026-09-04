@@ -48,7 +48,7 @@ export function ReportTable<T>({
   return (
     <>
       <div className="hidden md:block">
-        <Table>
+        <Table containerClassName="admin-table-scroll">
           <TableHeader>
             <TableRow className="hover:bg-transparent">
               {columns.map((column, i) => (

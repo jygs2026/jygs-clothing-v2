@@ -19,12 +19,29 @@ export function AdminStatCard({
   /** How the figure moved against the window before it, where there is one. */
   trend?: { label: string; up: boolean } | null;
 }) {
+  /*
+   * Six tiles across a 1240px page leaves each about 185px wide, and
+   * "₹3,36,29,700" set at 26px is wider than that — it ran out past the
+   * card's edge. CSS cannot fit text to a box on its own, so the figure is
+   * sized by how long it actually is. Doing it here rather than asking each
+   * screen to pick `moneyShort` means a tile that grows a digit next year
+   * cannot quietly start overflowing again.
+   */
+  const length = String(value).length;
+  const valueSize =
+    length > 11
+      ? "text-[19px] sm:text-[21px]"
+      : length > 8
+        ? "text-[21px] sm:text-[23px]"
+        : "text-[23px] sm:text-[26px]";
+
   return (
-    <div className="rounded-lg border border-border bg-admin-surface px-4 py-3.5">
+    <div className="admin-surface-raised admin-lift rounded-lg border border-border bg-admin-surface px-3.5 py-3 sm:px-4 sm:py-3.5">
       <p className="truncate text-[12.5px] text-foreground/60">{label}</p>
       <p
         className={cn(
-          "mt-1.5 text-[26px] leading-none font-semibold tracking-[-0.02em] font-feature-tnum",
+          "mt-1.5 leading-none font-semibold tracking-[-0.02em] font-feature-tnum",
+          valueSize,
           tone === "positive" && "text-emerald-700 dark:text-emerald-400",
           tone === "warning" && "text-amber-700 dark:text-amber-400",
           tone === "muted" && "text-foreground/55"
@@ -38,7 +55,7 @@ export function AdminStatCard({
       {trend === undefined ? null : (
         <p
           className={cn(
-            "mt-1.5 min-h-[34px] text-[11.5px] leading-[17px] font-medium font-feature-tnum",
+            "mt-1.5 text-[11.5px] leading-[17px] font-medium font-feature-tnum sm:min-h-[34px]",
             !trend && "text-transparent",
             trend?.up === true && "text-emerald-700 dark:text-emerald-400",
             trend?.up === false && "text-rose-700 dark:text-rose-400"
@@ -52,7 +69,7 @@ export function AdminStatCard({
       )}
       {/* Two lines' worth of room whether or not the line wraps, so a row of
           cards keeps one baseline. */}
-      <p className="mt-2 min-h-[34px] text-[11.5px] leading-[17px] text-foreground/48">
+      <p className="mt-1.5 text-[11.5px] leading-[16px] text-foreground/48 sm:mt-2 sm:min-h-[34px] sm:leading-[17px]">
         {detail}
       </p>
     </div>

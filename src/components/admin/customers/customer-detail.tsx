@@ -7,6 +7,7 @@ import { useMemo, useState } from "react";
 
 import { AdminCard, AdminCardList } from "@/components/admin/admin-card-list";
 import { AdminStatCard } from "@/components/admin/admin-stat-card";
+import { AdminStatRow } from "@/components/admin/admin-stat-row";
 import { CustomerDialog } from "@/components/admin/customers/customer-dialog";
 import { GroupPill } from "@/components/admin/customers/group-pill";
 import { StatusDot } from "@/components/admin/status-dot";
@@ -88,7 +89,7 @@ export function CustomerDetail() {
         </Button>
       </header>
 
-      <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <AdminStatRow cols={4}>
         <AdminStatCard
           label="Orders"
           value={customer.orders}
@@ -110,21 +111,24 @@ export function CustomerDetail() {
           detail={last ? `Order ${last.no}` : "Nothing on the bench"}
           tone={last ? "default" : "muted"}
         />
-      </div>
+      </AdminStatRow>
 
       <div className="mt-5 grid items-start gap-5 lg:grid-cols-[minmax(0,300px)_minmax(0,1fr)]">
         <section className="rounded-lg border border-border bg-admin-surface p-5">
           <h2 className="text-[14px] font-semibold">Contact</h2>
           <dl className="mt-4 grid gap-4">
             <Detail icon={Mail} label="Email">
-              <a href={`mailto:${customer.email}`} className="break-all hover:text-accent-2">
+              <a
+                href={`mailto:${customer.email}`}
+                className="-my-1.5 inline-block break-all rounded-md py-1.5 transition-colors hover:text-accent-2 sm:my-0 sm:py-0"
+              >
                 {customer.email}
               </a>
             </Detail>
             <Detail icon={Phone} label="Phone">
               <a
                 href={`tel:${customer.phone.replace(/\s/g, "")}`}
-                className="hover:text-accent-2 font-feature-tnum"
+                className="-my-1.5 inline-block rounded-md py-1.5 transition-colors hover:text-accent-2 font-feature-tnum sm:my-0 sm:py-0"
               >
                 {customer.phone}
               </a>
@@ -151,7 +155,7 @@ export function CustomerDetail() {
           ) : (
             <>
               <div className="hidden md:block">
-                <Table>
+                <Table containerClassName="admin-table-scroll">
                   <TableHeader>
                     <TableRow className="hover:bg-transparent">
                       <Th className="pl-5">Order</Th>
@@ -217,7 +221,7 @@ function Back() {
   return (
     <Link
       href="/admin/customers"
-      className="inline-flex items-center gap-1.5 text-[12.5px] text-foreground/55 transition-colors hover:text-accent-2"
+      className="-mx-2 inline-flex h-9 items-center gap-1.5 rounded-md px-2 text-[12.5px] text-foreground/55 transition-colors duration-(--admin-fast) hover:bg-muted hover:text-accent-2 sm:mx-0 sm:h-auto sm:px-0 sm:hover:bg-transparent"
     >
       <ChevronLeft className="size-3.5" strokeWidth={1.7} />
       Customers
@@ -242,7 +246,7 @@ function Detail({
     <div className="flex items-start gap-3">
       <Icon className="mt-0.5 size-4 shrink-0 text-foreground/40" strokeWidth={1.6} />
       <div className="min-w-0">
-        <dt className="text-[10.5px] tracking-[0.08em] text-foreground/45 uppercase">
+        <dt className="text-[11px] tracking-[0.08em] text-foreground/45 uppercase">
           {label}
         </dt>
         <dd className="mt-0.5 text-[13.5px] text-foreground/80">{children}</dd>

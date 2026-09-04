@@ -11,6 +11,7 @@ import { AdminRangeTabs } from "@/components/admin/admin-range-tabs";
 import { AdminSectionTabs } from "@/components/admin/admin-section-tabs";
 import { AdminSegmented } from "@/components/admin/admin-segmented";
 import { AdminStatCard } from "@/components/admin/admin-stat-card";
+import { AdminStatRow } from "@/components/admin/admin-stat-row";
 import { BarList } from "@/components/admin/charts/bar-list";
 import { ShareBar } from "@/components/admin/charts/share-bar";
 import { TrendChart } from "@/components/admin/charts/trend-chart";
@@ -668,7 +669,7 @@ function Returns({ days, period, span }: TabProps) {
 
 function Tiles({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">{children}</div>
+    <AdminStatRow>{children}</AdminStatRow>
   );
 }
 
@@ -696,6 +697,7 @@ function Export<T>({
     <Button
       variant="outline"
       size="sm"
+      className="h-9 sm:h-7"
       onClick={() => {
         downloadCsv(`${name}.csv`, toCsv(columns, rows));
         toast(`${rows.length} ${noun} exported.`);

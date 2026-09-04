@@ -61,11 +61,27 @@
   --color-admin-rail-hover: var(--admin-rail-hover);
   --color-admin-rail-active: var(--admin-rail-active);
   --color-admin-rail-accent: var(--admin-rail-accent);
+
+  /*
+   * One curve for everything the studio moves. A drawer, a table row and a
+   * segmented pill all decelerate identically, which is most of what makes a
+   * dense interface feel like one machine rather than twenty widgets. The
+   * `out` variant is the longer-tailed version, for anything that travels a
+   * visible distance across the screen.
+   */
+  --ease-admin: cubic-bezier(0.22, 0.8, 0.28, 1);
+  --ease-admin-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 :root {
   /* The header bar's exact height — the search panel drops from its underside. */
   --jygs-nav-h: 61px;
+  /*
+   * The studio's phone tab bar. One number so the bar's own height and the
+   * room the page leaves for it cannot drift apart — the failure there is
+   * silent, and costs you the last row of every table.
+   */
+  --admin-tabbar-h: 56px;
   --background: #ffffff;
   --foreground: #201f1d;
   --card: #eae9e9;
@@ -120,6 +136,24 @@
   /* For SKUs, role codes and anything else meant to be read character by
      character. The shop maps `font-mono` to its body serif. */
   --admin-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+
+  /*
+   * Three durations, and nothing between them. `fast` is for a change of
+   * colour the eye should not have to wait for; `medium` for anything that
+   * changes size or position in place; `slow` for the drawer, which crosses
+   * the whole screen and looks snatched at anything shorter.
+   */
+  --admin-fast: 130ms;
+  --admin-medium: 220ms;
+  --admin-slow: 300ms;
+
+  /* The lift under a card. Kept as a token so every raised surface in the
+     studio agrees, and so the dark theme can drop the light-scattering
+     version for a plain darker one. */
+  --admin-shadow: 0 1px 2px color-mix(in srgb, #201f1d 5%, transparent),
+    0 1px 3px color-mix(in srgb, #201f1d 4%, transparent);
+  --admin-shadow-lifted: 0 2px 4px color-mix(in srgb, #201f1d 5%, transparent),
+    0 6px 16px color-mix(in srgb, #201f1d 8%, transparent);
 }
 
 .dark {
@@ -159,6 +193,11 @@
   /* A step lighter than the rail, so the rail's edge still reads. */
   --admin-canvas: #1a1917;
   --admin-surface: #232120;
+  /* Shadow does almost no work on a dark ground — the raised surface is
+     already lighter than the canvas. What is left is a contact edge. */
+  --admin-shadow: 0 1px 2px color-mix(in srgb, #000 30%, transparent);
+  --admin-shadow-lifted: 0 2px 6px color-mix(in srgb, #000 34%, transparent),
+    0 8px 20px color-mix(in srgb, #000 26%, transparent);
 }
 
 @layer base {
@@ -194,6 +233,31 @@
   [data-admin] :is(h1, h2, h3, h4, h5, h6) {
     font-family: var(--font-admin-sans), ui-sans-serif, system-ui, sans-serif;
     letter-spacing: -0.015em;
+  }
+
+  /*
+   * Touch devices paint a grey box over anything tappable for ~300ms. On a
+   * list of cards that each *do* have their own press state it reads as lag,
+   * so the studio draws its own feedback and turns the browser's off.
+   */
+  [data-admin] {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /*
+   * Said once, for the whole studio, rather than a `motion-reduce:` on every
+   * moving part. Anything that travels stops travelling; state changes still
+   * happen, they just arrive immediately.
+   */
+  @media (prefers-reduced-motion: reduce) {
+    [data-admin] *,
+    [data-admin] *::before,
+    [data-admin] *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 
   /*
@@ -272,6 +336,158 @@
     .skeleton-shimmer {
       animation: none;
     }
+  }
+}
+
+@layer utilities {
+  /*
+   * Press feedback. A finger gets no hover, so without this a card and a
+   * disabled card feel identical until the page changes under you. The dip is
+   * deliberately small — at 0.97 a full-width card visibly detaches from its
+   * neighbours.
+   */
+  .admin-press {
+    transition:
+      transform var(--admin-fast) var(--ease-admin),
+      background-color var(--admin-fast) var(--ease-admin),
+      box-shadow var(--admin-medium) var(--ease-admin);
+  }
+  .admin-press:active {
+    transform: scale(0.988);
+  }
+
+  /* A raised surface, and the same surface under a pointer. */
+  .admin-surface-raised {
+    box-shadow: var(--admin-shadow);
+    transition:
+      box-shadow var(--admin-medium) var(--ease-admin),
+      border-color var(--admin-medium) var(--ease-admin);
+  }
+  .admin-lift:hover {
+    box-shadow: var(--admin-shadow-lifted);
+  }
+
+  /*
+   * A row of controls too wide for a phone: it scrolls sideways, and the mask
+   * fades the last few pixels so it is obvious there is more to the right
+   * rather than the row simply ending mid-word.
+   */
+  .admin-scroll-x {
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  .admin-scroll-x::-webkit-scrollbar {
+    display: none;
+  }
+  @media (max-width: 639px) {
+    .admin-scroll-fade {
+      -webkit-mask-image: linear-gradient(
+        to right,
+        transparent 0,
+        #000 12px,
+        #000 calc(100% - 20px),
+        transparent 100%
+      );
+      mask-image: linear-gradient(
+        to right,
+        transparent 0,
+        #000 12px,
+        #000 calc(100% - 20px),
+        transparent 100%
+      );
+    }
+  }
+
+  /*
+   * Room for the iPhone's home indicator under anything that sits on the
+   * bottom edge. A spacer rather than padding: every element that needs this
+   * already has padding of its own from a Tailwind class, and two rules
+   * setting `padding-bottom` would leave which one wins up to stylesheet
+   * order. This adds to whatever is there, and collapses to nothing on the
+   * hardware that has no indicator.
+   */
+  .admin-safe-b::after {
+    content: "";
+    display: block;
+    flex: none;
+    height: env(safe-area-inset-bottom, 0px);
+  }
+
+  /*
+   * The edge shadow on a table too wide for its panel. Four backgrounds: two
+   * opaque covers pinned to the content box, two shadows pinned to the
+   * scrollport. `background-attachment: local` makes the covers travel with
+   * the rows, so each shadow is hidden until there is something scrolled off
+   * that side — the shadow appears on the right the moment a column goes
+   * past the edge, and on the left once you have scrolled away from it.
+   *
+   * Eight of the studio's tables carry more columns than a laptop can show.
+   * Without this the twelfth column is simply invisible, and nothing on
+   * screen suggests it is there.
+   */
+  .admin-table-scroll {
+    background-image:
+      linear-gradient(to right, var(--admin-surface) 40%, transparent),
+      linear-gradient(to left, var(--admin-surface) 40%, transparent),
+      linear-gradient(
+        to right,
+        color-mix(in srgb, var(--foreground) 13%, transparent),
+        transparent
+      ),
+      linear-gradient(
+        to left,
+        color-mix(in srgb, var(--foreground) 13%, transparent),
+        transparent
+      );
+    background-position:
+      left center,
+      right center,
+      left center,
+      right center;
+    background-repeat: no-repeat;
+    background-size:
+      32px 100%,
+      32px 100%,
+      12px 100%,
+      12px 100%;
+    background-attachment: local, local, scroll, scroll;
+  }
+
+  /* The page's own entrance. Short, and only ever downward — a studio page
+     arriving from the side reads as a mistake. */
+  .admin-enter {
+    animation: jygs-admin-enter var(--admin-medium) var(--ease-admin-out) both;
+  }
+}
+
+/*
+ * Toasts sit 16px off the bottom, which on a phone puts them squarely on top
+ * of the studio's tab bar — so a message about what you just did covers the
+ * way to go somewhere else. Lifted clear of it, but only while the studio is
+ * open and only where the bar exists; the shop's own toasts are unaffected.
+ *
+ * `!important` because Sonner writes these custom properties as inline
+ * styles on the toaster, which no stylesheet rule can otherwise outrank.
+ */
+@media (max-width: 767px) {
+  .admin-studio [data-sonner-toaster][data-y-position="bottom"] {
+    --mobile-offset-bottom: calc(
+      var(--admin-tabbar-h) + env(safe-area-inset-bottom, 0px) + 12px
+    ) !important;
+  }
+}
+
+@keyframes jygs-admin-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
   }
 }
 

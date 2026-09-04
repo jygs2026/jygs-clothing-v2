@@ -1,9 +1,11 @@
 "use client";
 
+import { SearchX } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { AdminCard, AdminCardList } from "@/components/admin/admin-card-list";
 import { AdminPagination } from "@/components/admin/admin-pagination";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Table,
@@ -48,10 +50,54 @@ export function DataTable<T>({
 }) {
   const byKey = new Map(columns.map((column) => [column.key, column]));
 
+  if (table.rows.length === 0) {
+    return (
+      <>
+        <div className="flex flex-col items-center justify-center gap-1.5 px-6 py-16 text-center">
+          <SearchX
+            aria-hidden="true"
+            className="mb-1 size-7 text-foreground/25"
+            strokeWidth={1.4}
+          />
+          <p className="text-[14px] font-medium text-foreground/75">{empty}</p>
+          {/*
+           * An empty list after filtering is a different problem from an
+           * empty list — one has a way out, and it is worth handing it over
+           * rather than leaving the reader to find the control that did it.
+           */}
+          {table.activeFilters > 0 || table.query ? (
+            <>
+              <p className="text-[13px] text-foreground/50">
+                Nothing here matches what you are filtering by.
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-3"
+                onClick={table.clearFilters}
+              >
+                Clear the filters
+              </Button>
+            </>
+          ) : null}
+        </div>
+
+        <AdminPagination
+          page={table.page}
+          perPage={table.perPage}
+          total={table.total}
+          noun={noun}
+          onPage={table.setPage}
+          onPerPage={table.setPerPage}
+        />
+      </>
+    );
+  }
+
   return (
     <>
       <div className="hidden md:block">
-        <Table>
+        <Table containerClassName="admin-table-scroll">
           <TableHeader>
             <TableRow className="hover:bg-transparent">
               {selectable ? (
@@ -95,6 +141,7 @@ export function DataTable<T>({
                 <TableRow
                   key={table.idOf(row)}
                   data-state={picked ? "selected" : undefined}
+                  className="transition-colors duration-(--admin-fast) ease-admin"
                 >
                   {selectable ? (
                     <TableCell className="pl-4">
@@ -154,6 +201,7 @@ export function DataTable<T>({
             title={card.title(row)}
             subtitle={card.subtitle?.(row)}
             badges={card.badges?.(row)}
+            metric={card.metric?.(row)}
             fields={card.fields
               .map((key) => byKey.get(key))
               .filter((column): column is Column<T> => Boolean(column))
@@ -167,10 +215,6 @@ export function DataTable<T>({
           />
         ))}
       </AdminCardList>
-
-      {table.rows.length === 0 ? (
-        <p className="px-4 py-14 text-center text-[13.5px] text-foreground/55">{empty}</p>
-      ) : null}
 
       <AdminPagination
         page={table.page}

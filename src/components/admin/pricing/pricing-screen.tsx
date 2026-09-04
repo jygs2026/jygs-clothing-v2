@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { AdminPanel } from "@/components/admin/admin-panel";
 import { AdminStatCard } from "@/components/admin/admin-stat-card";
+import { AdminStatRow } from "@/components/admin/admin-stat-row";
 import { ProductThumb } from "@/components/admin/products/product-thumb";
 import { StatusPill } from "@/components/admin/status-pill";
 import { downloadCsv, toCsv, type Column } from "@/components/admin/table/columns";
@@ -16,12 +17,12 @@ import { DataTable } from "@/components/admin/table/data-table";
 import { TableToolbar } from "@/components/admin/table/table-toolbar";
 import { Button } from "@/components/ui/button";
 import {
-  CATALOGUE,
   CATEGORIES,
   margin,
   marginPercent,
   type CatalogueItem,
 } from "@/lib/admin/catalogue";
+import { useCatalogueStore } from "@/lib/admin/catalogue-store";
 import { money, moneyShort } from "@/lib/admin/format";
 import { ALL_ORDERS } from "@/lib/admin/orders";
 import { byNumber, byText, searchAcross, useAdminTable } from "@/lib/admin/table";
@@ -50,28 +51,30 @@ export function PricingScreen() {
     return units;
   }, []);
 
+  const items = useCatalogueStore((s) => s.items);
+
   const stats = useMemo(() => {
-    const margins = CATALOGUE.map(marginPercent);
-    const contribution = CATALOGUE.reduce(
+    const margins = items.map(marginPercent);
+    const contribution = items.reduce(
       (sum, item) => sum + margin(item) * (soldBy.get(item.id) ?? 0),
       0
     );
-    const revenue = CATALOGUE.reduce(
+    const revenue = items.reduce(
       (sum, item) => sum + item.price * (soldBy.get(item.id) ?? 0),
       0
     );
     return {
       average: margins.reduce((a, b) => a + b, 0) / (margins.length || 1),
-      thin: CATALOGUE.filter((item) => marginPercent(item) < THIN_MARGIN).length,
-      best: [...CATALOGUE].sort((a, b) => marginPercent(b) - marginPercent(a))[0],
+      thin: items.filter((item) => marginPercent(item) < THIN_MARGIN).length,
+      best: [...items].sort((a, b) => marginPercent(b) - marginPercent(a))[0],
       contribution,
       revenue,
       cost: revenue - contribution,
     };
-  }, [soldBy]);
+  }, [items, soldBy]);
 
   const table = useAdminTable<CatalogueItem>({
-    rows: CATALOGUE,
+    rows: items,
     id: (row) => row.id,
     initialQuery,
     initialPerPage: 25,
@@ -251,7 +254,7 @@ export function PricingScreen() {
         </Button>
       </AdminPageHeader>
 
-      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+      <AdminStatRow>
         <AdminStatCard
           label="Average margin"
           value={`${Math.round(stats.average)}%`}
@@ -266,8 +269,9 @@ export function PricingScreen() {
         />
         <AdminStatCard
           label="Best margin"
-          value={`${Math.round(marginPercent(stats.best))}%`}
-          detail={stats.best.name}
+          value={stats.best ? `${Math.round(marginPercent(stats.best))}%` : "—"}
+          tone={stats.best ? "default" : "muted"}
+          detail={stats.best?.name ?? "Nothing in the catalogue"}
         />
         <AdminStatCard label="Revenue" value={moneyShort(stats.revenue)} detail="Paid orders" />
         <AdminStatCard label="Cost of goods" value={moneyShort(stats.cost)} detail="What it cost to make" />
@@ -277,7 +281,7 @@ export function PricingScreen() {
           tone="positive"
           detail="Before overheads"
         />
-      </div>
+      </AdminStatRow>
 
       <AdminPanel className="mt-5">
         <TableToolbar table={table} placeholder="Search pricing…" />

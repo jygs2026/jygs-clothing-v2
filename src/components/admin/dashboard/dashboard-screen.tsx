@@ -9,6 +9,7 @@ import { AdminPanel, AdminPanelHeader } from "@/components/admin/admin-panel";
 import { AdminRangeTabs } from "@/components/admin/admin-range-tabs";
 import { AdminSegmented } from "@/components/admin/admin-segmented";
 import { AdminStatCard } from "@/components/admin/admin-stat-card";
+import { AdminStatRow } from "@/components/admin/admin-stat-row";
 import { BarList } from "@/components/admin/charts/bar-list";
 import { ShareBar } from "@/components/admin/charts/share-bar";
 import { TrendChart } from "@/components/admin/charts/trend-chart";
@@ -82,7 +83,7 @@ export function DashboardScreen() {
         <AdminRangeTabs value={days} onChange={setDays} />
       </AdminPageHeader>
 
-      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+      <AdminStatRow>
         <AdminStatCard
           label="Taken"
           value={moneyShort(now.revenue)}
@@ -121,7 +122,7 @@ export function DashboardScreen() {
           trend={toTrend(now.refunded, before.refunded, { lowerIsBetter: true })}
           detail="Money given back in the period"
         />
-      </div>
+      </AdminStatRow>
 
       <AdminPanel className="mt-5">
         <AdminPanelHeader
@@ -369,7 +370,7 @@ function SeeAll({ href }: { href: string }) {
   return (
     <Link
       href={href}
-      className="flex shrink-0 items-center gap-1 text-[12.5px] text-foreground/58 transition-colors hover:text-accent-2"
+      className="-mr-2 flex h-9 shrink-0 items-center gap-1 rounded-md px-2 text-[12.5px] text-foreground/58 transition-colors duration-(--admin-fast) hover:bg-muted hover:text-accent-2 sm:mr-0 sm:h-auto sm:px-0 sm:hover:bg-transparent"
     >
       See all
       <ArrowRight className="size-3.5" strokeWidth={1.7} />

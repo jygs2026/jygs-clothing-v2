@@ -46,7 +46,10 @@ export function BarList({
           <li key={row.label}>
             <div className="flex items-baseline justify-between gap-3">
               {row.href ? (
-                <Link href={row.href} className="min-w-0 hover:text-accent-2">
+                <Link
+                  href={row.href}
+                  className="-my-1.5 min-w-0 rounded-md py-1.5 transition-colors hover:text-accent-2 sm:my-0 sm:py-0"
+                >
                   {name}
                 </Link>
               ) : (
