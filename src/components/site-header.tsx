@@ -48,7 +48,7 @@ export function SiteHeader() {
           <span className="hidden items-baseline gap-1 font-heading text-xl font-semibold tracking-[0.26em] min-[400px]:flex">
             JYGS
             <span className="text-[10px] font-normal tracking-[0.2em] text-foreground/55 uppercase">
-              Stores
+              Store
             </span>
           </span>
         </Link>
