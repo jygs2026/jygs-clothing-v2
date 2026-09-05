@@ -508,3 +508,254 @@
     background-position: -50% 0;
   }
 }
+
+@layer components {
+  /*
+   * The intro veil — the one screen a first-time visitor gets before the
+   * shop. Its whole sequence lives here rather than in JS on purpose: the
+   * veil is painted with the server's HTML, so if it waited for hydration to
+   * start moving it would spend the one moment it exists for sitting still.
+   * React only ever tells it to leave, by setting `data-leaving`.
+   */
+  .jygs-intro {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /*
+     * Paper, not ink. The ram is drawn as dark line work on a transparent
+     * ground — there is no white anywhere in the file — so its face is only
+     * a face while something pale is behind it. On a dark veil the animal
+     * closes up into a silhouette and the gold is all that survives.
+     *
+     * Warmer than the shop's own #ffffff so that the veil still reads as a
+     * sheet lying over the page rather than as the page itself, which is
+     * what makes the lift legible in the first second of it.
+     */
+    background: #f4f2ee;
+    padding-inline: 24px;
+    transition: transform 780ms var(--ease-admin-out);
+  }
+
+  /*
+   * The lift. Going up rather than fading leaves the shop arriving from
+   * under something, which is the whole difference between a curtain and a
+   * loading spinner.
+   */
+  .jygs-intro[data-leaving] {
+    transform: translateY(-100%);
+  }
+
+  /*
+   * The departing sheet's edge. Against the dark hero it would show anyway,
+   * but the header it crosses first is near enough the veil's own tone to
+   * lose it, and a curtain with no bottom edge just looks like a repaint.
+   */
+  .jygs-intro::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0;
+    height: 1px;
+    background: color-mix(in srgb, #201f1d 12%, transparent);
+    box-shadow: 0 6px 22px color-mix(in srgb, #201f1d 10%, transparent);
+  }
+
+  /*
+   * A breath of warmth toward the edges, so the sheet reads as paper rather
+   * than as a flat fill. Deliberately faint: you should not be able to point
+   * at it.
+   *
+   * It stays clear of the mark, which is the reason for the hole in the
+   * middle. Tone running under the ram would sit behind the gaps that stand
+   * in for its face, and the animal picks up a shadow it was not drawn with.
+   * The box is wide enough that the tinted band's curve is gentle and its
+   * outer edge falls off the screen instead of closing into a visible ring,
+   * and that the mark — at most a fifth of this box's radius, at any width
+   * the clamps allow — sits well inside the dead centre.
+   */
+  .jygs-intro::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(170vw, 1500px);
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(
+      circle,
+      transparent 0 30%,
+      color-mix(in srgb, #b68235 7%, transparent) 62%,
+      color-mix(in srgb, #b68235 10%, transparent) 100%
+    );
+    animation: jygs-intro-glow 1400ms var(--ease-admin-out) 100ms both;
+  }
+
+  .jygs-intro-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  /* The mark leaves a beat before the veil does, so the two reads separate. */
+  .jygs-intro[data-leaving] .jygs-intro-content {
+    opacity: 0;
+    transform: translateY(-6px);
+    transition:
+      opacity 300ms ease,
+      transform 300ms ease;
+  }
+
+  /*
+   * The animal fills its own box here, so this is close to its drawn size —
+   * the 180px the old badge needed would put a ram the size of a face on the
+   * screen.
+   */
+  .jygs-intro-mark {
+    width: clamp(104px, 26vw, 132px);
+    height: auto;
+    animation: jygs-intro-mark 700ms var(--ease-admin-out) both;
+  }
+
+  /*
+   * The wordmark settles rather than appears: it opens wider than its resting
+   * tracking and draws in. `margin-right` cancels the trailing letter-space,
+   * which would otherwise push the word off centre by half a step.
+   */
+  .jygs-intro-word {
+    margin-top: 30px;
+    margin-right: -0.42em;
+    font-family: var(--font-heading), serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: #201f1d;
+    animation: jygs-intro-word 900ms var(--ease-admin-out) 200ms both;
+  }
+
+  /*
+   * What JYGS stands for, set as a label rather than as a line of prose: the
+   * body serif at a size the wordmark above it dwarfs, so it reads as the
+   * expansion of the four letters and not as a tagline of its own. The
+   * tracking loosens as the screen widens, since at phone widths the line is
+   * already most of the available measure.
+   *
+   * `margin-right` cancels the trailing letter-space, as on the wordmark.
+   */
+  .jygs-intro-full {
+    margin-top: 13px;
+    margin-right: -0.16em;
+    font-size: clamp(9px, 2.4vw, 10.5px);
+    letter-spacing: clamp(0.1em, 0.5vw, 0.16em);
+    text-transform: uppercase;
+    color: color-mix(in srgb, #201f1d 52%, transparent);
+    animation: jygs-intro-line 800ms var(--ease-admin-out) 420ms both;
+  }
+
+  /*
+   * A hairline that draws across instead of a spinner. It is honest about
+   * being a beat rather than a measurement — nothing here knows what
+   * fraction of anything has loaded — but it gives the pause a shape, and it
+   * finishes exactly as the veil starts to lift.
+   */
+  .jygs-intro-rule {
+    position: relative;
+    margin-top: 24px;
+    height: 1px;
+    /*
+     * As wide as the line above it. The column is sized by its widest child,
+     * which is the expansion, so this lands the beat on exactly the same two
+     * edges — a fixed width here reads as an arbitrary dash under a line it
+     * has nothing to do with.
+     */
+    width: 100%;
+    overflow: hidden;
+    background: color-mix(in srgb, #201f1d 13%, transparent);
+  }
+
+  .jygs-intro-rule > span {
+    position: absolute;
+    inset: 0;
+    background: #b68235;
+    transform-origin: left center;
+    /*
+     * Its own curve rather than the studio's: `--ease-admin` is front-loaded
+     * enough that the line is 85% drawn a third of the way in and then
+     * crawls, which reads as a stall. This one keeps moving throughout.
+     */
+    animation: jygs-intro-rule 770ms cubic-bezier(0.45, 0.05, 0.15, 1) 480ms
+      both;
+  }
+
+  /*
+   * The shop's own reduced-motion rule — the blanket one above only covers
+   * `[data-admin]`. The veil still appears and still leaves, it just stops
+   * travelling to do it.
+   */
+  @media (prefers-reduced-motion: reduce) {
+    .jygs-intro,
+    .jygs-intro::before,
+    .jygs-intro * {
+      animation-duration: 1ms !important;
+      animation-delay: 0ms !important;
+      transition-duration: 160ms !important;
+    }
+    .jygs-intro[data-leaving] {
+      transform: none;
+      opacity: 0;
+    }
+  }
+}
+
+@keyframes jygs-intro-glow {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes jygs-intro-mark {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes jygs-intro-word {
+  from {
+    opacity: 0;
+    letter-spacing: 0.66em;
+  }
+  to {
+    opacity: 1;
+    letter-spacing: 0.42em;
+  }
+}
+
+@keyframes jygs-intro-line {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes jygs-intro-rule {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}

@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { LogoMark } from "@/components/logo-mark";
 import { SocialLinks } from "@/components/social-icons";
 
 const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
@@ -39,7 +40,8 @@ export function SiteFooter() {
     <footer className="border-t border-border">
       <div className="mx-auto grid max-w-[1240px] grid-cols-2 gap-8 px-5 py-14 text-[13.5px] leading-[26px] sm:px-6 md:grid-cols-[minmax(0,2fr)_repeat(3,minmax(130px,1fr))] md:gap-14">
         <div className="col-span-2 md:col-span-1">
-          <span className="block font-heading text-xl font-semibold tracking-[0.26em]">
+          <span className="flex items-center gap-2.5 font-heading text-xl font-semibold tracking-[0.26em]">
+            <LogoMark size={36} />
             JYGS
           </span>
           <p className="mt-3 max-w-[30ch] text-foreground/62">

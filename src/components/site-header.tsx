@@ -4,9 +4,11 @@ import { Search, ShoppingBag, User } from "lucide-react";
 import Link from "next/link";
 
 import { AccountMenu } from "@/components/account-menu";
+import { LogoMark } from "@/components/logo-mark";
 import { Marquee } from "@/components/marquee";
 import { MobileNav } from "@/components/mobile-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { THEME_SWITCHER_ENABLED } from "@/lib/theme-config";
 import { Button } from "@/components/ui/button";
 import { useMounted } from "@/hooks/use-mounted";
 import { useOpenBag } from "@/hooks/use-open-bag";
@@ -31,9 +33,24 @@ export function SiteHeader() {
       <nav className="mx-auto flex h-[var(--jygs-nav-h)] max-w-[1240px] items-center gap-4 border-b border-border px-5 sm:gap-7 sm:px-6">
         <Link
           href="/"
-          className="mr-auto font-heading text-xl font-semibold tracking-[0.26em]"
+          aria-label="JYGS Stores — home"
+          className="mr-auto flex items-center gap-2.5"
         >
-          JYGS
+          <LogoMark size={27} priority />
+          {/*
+            * Below ~400px the mark has to carry the header alone: the icon
+            * row and the wordmark together will not fit the bar.
+            *
+            * `items-baseline` rather than centring, so "Stores" sits on the
+            * wordmark's own baseline — half its size, and hung off the end of
+            * it rather than floated beside it.
+            */}
+          <span className="hidden items-baseline gap-1 font-heading text-xl font-semibold tracking-[0.26em] min-[400px]:flex">
+            JYGS
+            <span className="text-[10px] font-normal tracking-[0.2em] text-foreground/55 uppercase">
+              Stores
+            </span>
+          </span>
         </Link>
         <div className="hidden items-center gap-7 min-[860px]:flex">
           <Link
@@ -99,9 +116,11 @@ export function SiteHeader() {
             </span>
           ) : null}
         </button>
-        <div className="hidden min-[860px]:block">
-          <ThemeToggle />
-        </div>
+        {THEME_SWITCHER_ENABLED ? (
+          <div className="hidden min-[860px]:block">
+            <ThemeToggle />
+          </div>
+        ) : null}
         <MobileNav />
         <Button
           render={<Link href="/#waitlist" />}

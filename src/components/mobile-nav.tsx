@@ -12,8 +12,10 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { LogoMark } from "@/components/logo-mark";
 import { useMounted } from "@/hooks/use-mounted";
 import { useSearchStore } from "@/lib/search-store";
+import { THEME_SWITCHER_ENABLED } from "@/lib/theme-config";
 import { cn } from "@/lib/utils";
 
 const LINKS = [
@@ -48,11 +50,12 @@ export function MobileNav() {
       </button>
       <SheetContent side="left" className="flex w-full flex-col gap-0 p-6 sm:max-w-[320px]">
         <SheetHeader className="p-0">
-          <SheetTitle className="font-heading text-xl font-semibold tracking-[0.26em]">
+          <SheetTitle className="flex items-center gap-2.5 font-heading text-xl font-semibold tracking-[0.26em]">
+            <LogoMark size={32} />
             JYGS
           </SheetTitle>
           <SheetDescription className="sr-only">
-            Site navigation and theme
+            {THEME_SWITCHER_ENABLED ? "Site navigation and theme" : "Site navigation"}
           </SheetDescription>
         </SheetHeader>
 
@@ -89,6 +92,7 @@ export function MobileNav() {
           Join the waitlist
         </Link>
 
+        {THEME_SWITCHER_ENABLED ? (
         <div className="mt-auto pt-8">
           <span className="mb-2.5 block text-[11px] tracking-[0.11em] text-foreground/55 uppercase">
             Colour theme
@@ -116,6 +120,7 @@ export function MobileNav() {
             })}
           </div>
         </div>
+        ) : null}
       </SheetContent>
     </Sheet>
   );

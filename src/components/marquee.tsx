@@ -1,8 +1,8 @@
 const ITEMS = [
-  "Volume 01 — Ash & Bone",
-  "Cut in London, sewn in Porto",
-  "400 pieces, then the pattern rests",
-  "Waitlist closes 12 September",
+  "Customise your piece",
+  "Cut for you",
+  "Make it distinct",
+  "Your piece. Your way.",
 ];
 
 function Row({ ariaHidden }: { ariaHidden?: boolean }) {

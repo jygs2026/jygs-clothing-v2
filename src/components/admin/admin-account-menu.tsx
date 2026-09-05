@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/menu";
 import { useMounted } from "@/hooks/use-mounted";
 import { initialsOf, useAuthStore } from "@/lib/auth-store";
+import { THEME_SWITCHER_ENABLED } from "@/lib/theme-config";
 import { cn } from "@/lib/utils";
 
 const THEMES = [
@@ -90,6 +91,8 @@ export function AdminAccountMenu({
         Back to the shop
       </MenuLinkItem>
 
+      {THEME_SWITCHER_ENABLED ? (
+        <>
       <MenuSeparator />
 
       <MenuGroup>
@@ -104,6 +107,8 @@ export function AdminAccountMenu({
           </MenuItem>
         ))}
       </MenuGroup>
+        </>
+      ) : null}
 
       {signedIn ? (
         <>

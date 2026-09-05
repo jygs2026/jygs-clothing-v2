@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { AdminAccountMenu } from "@/components/admin/admin-account-menu";
+import { LogoMark } from "@/components/logo-mark";
 import { activeAdminHref, ADMIN_NAV } from "@/lib/admin/nav";
 import { useAdminShellStore } from "@/lib/admin/shell-store";
 import { cn } from "@/lib/utils";
@@ -38,14 +39,22 @@ export function AdminSidebar({
           href="/admin"
           onClick={onNavigate}
           aria-label="JYGS admin — dashboard"
-          className="flex min-w-0 items-baseline gap-2 rounded-[3px] outline-none focus-visible:ring-3 focus-visible:ring-admin-rail-accent/50"
+          className="flex min-w-0 items-center gap-2.5 rounded-[3px] outline-none focus-visible:ring-3 focus-visible:ring-admin-rail-accent/50"
         >
-          <span className="font-heading text-[21px] leading-none font-semibold tracking-[0.24em]">
-            {collapsed ? "J" : "JYGS"}
-          </span>
+          {/*
+           * Collapsed, the mark is the whole badge — it says more at 30px
+           * than the lone "J" it replaces. On a plate, because the rail is
+           * near-black and the ram has no white of its own to stand in.
+           */}
+          <LogoMark size={30} plate />
           {collapsed ? null : (
-            <span className="text-[10.5px] tracking-[0.22em] text-admin-rail-accent uppercase">
-              Admin
+            <span className="flex min-w-0 items-baseline gap-2">
+              <span className="font-heading text-[21px] leading-none font-semibold tracking-[0.24em]">
+                JYGS
+              </span>
+              <span className="text-[10.5px] tracking-[0.22em] text-admin-rail-accent uppercase">
+                Admin
+              </span>
             </span>
           )}
         </Link>
